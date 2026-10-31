@@ -70,6 +70,13 @@ export default function PaymentCheckoutModal({
 
   if (!isOpen) return null;
 
+  const isOption1Booking = type === 'booking' && (
+    item?.isOption1 ||
+    item?.name?.includes('Môi Giới') ||
+    item?.packageName?.includes('Môi Giới') ||
+    item?.platformFeePercent === 100
+  );
+
   const totalAmount = amount || (type === 'course' ? item?.price : item?.totalPrice) || 0;
   const availableBalance = wallet?.availableBalance || 0;
   const holdingBalance = wallet?.holdingBalance || 0;
@@ -165,10 +172,18 @@ export default function PaymentCheckoutModal({
             </div>
             <div>
               <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700, color: '#fff' }}>
-                {type === 'course' ? 'Thanh toán Khóa học Online' : 'Ký quỹ Thuê Gia sư 1-1'}
+                {type === 'course' 
+                  ? 'Thanh toán Khóa học Online (Video quay sẵn)' 
+                  : (isOption1Booking 
+                      ? 'Thanh toán Phí Môi Giới Kết Nối' 
+                      : 'Ký quỹ Học phí Gia sư 1-1')}
               </h3>
               <p style={{ margin: '2px 0 0', fontSize: '0.8rem', color: '#8c8c8c' }}>
-                Hệ thống Ký quỹ Escrow bảo đảm an toàn 100% học phí
+                {type === 'course' 
+                  ? 'Sở hữu trọn đời toàn bộ video bài giảng & tài liệu học tập' 
+                  : (isOption1Booking 
+                      ? 'Thu phí môi giới 1 lần duy nhất • Mở khóa liên hệ gia sư để tự dạy ngoài' 
+                      : 'Hệ thống Ký quỹ Escrow bảo đảm an toàn 100% học phí')}
               </p>
             </div>
           </div>
@@ -210,10 +225,12 @@ export default function PaymentCheckoutModal({
                 Thanh toán thành công!
               </h3>
 
-              <p style={{ color: '#6a6f73', fontSize: '0.95rem', maxWidth: 440, margin: '0 auto 20px', lineHeight: 1.5 }}>
+              <p style={{ color: '#6a6f73', fontSize: '0.95rem', maxWidth: 460, margin: '0 auto 20px', lineHeight: 1.5 }}>
                 {type === 'course' 
-                  ? 'Khóa học của bạn đã được kích hoạt thành công! Toàn bộ bài giảng và link phòng học Google Meet đã sẵn sàng.'
-                  : 'Tiền học phí đã được giữ an toàn trong ví Ký quỹ EduTutor. Gia sư đã nhận được yêu cầu và sẽ liên hệ bắt đầu buổi học!'}
+                  ? 'Khóa học của bạn đã được kích hoạt thành công! Toàn bộ video bài giảng quay sẵn chất lượng cao đã sẵn sàng để bạn học ngay.'
+                  : (isOption1Booking 
+                      ? 'Đã thanh toán phí môi giới thành công! Thông tin liên hệ (SĐT, Zalo) của Gia sư đã được mở khóa để hai bên tự do sắp xếp lịch dạy ngoài.'
+                      : 'Tiền học phí đã được giữ an toàn trong ví Ký quỹ EduTutor. Phòng học Google Meet 1-1 đã sẵn sàng để bạn và gia sư bắt đầu!')}
               </p>
 
               <div style={{ 
@@ -246,7 +263,7 @@ export default function PaymentCheckoutModal({
                   onClick={onClose}
                   style={{ padding: '12px 32px', fontSize: '0.95rem' }}
                 >
-                  {type === 'course' ? 'Xem khóa học & Link Google Meet' : 'Đã hiểu & Đóng'}
+                  {type === 'course' ? 'Xem video bài giảng' : 'Đã hiểu & Đóng'}
                 </button>
               </div>
             </div>
@@ -281,11 +298,13 @@ export default function PaymentCheckoutModal({
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
                     <span className="badge badge-bestseller" style={{ fontSize: '0.7rem', padding: '2px 6px' }}>
-                      {type === 'course' ? 'Khóa học Online' : 'Gia sư 1-1'}
+                      {type === 'course' 
+                        ? 'Khóa học Online (Video)' 
+                        : (isOption1Booking ? '🎯 Gói Môi Giới Ngoài' : '💻 Gia sư 1-1 Trực Tuyến')}
                     </span>
                   </div>
                   <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: '#1c1d1f', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {type === 'course' ? item?.title : (item?.name || item?.package?.name || 'Gói dạy kèm 1-1')}
+                    {type === 'course' ? item?.title : (item?.name || item?.package?.name || (isOption1Booking ? 'Phí dịch vụ môi giới gia sư' : 'Gói dạy kèm trực tuyến 1-1'))}
                   </h4>
                   <p style={{ margin: '2px 0 0', fontSize: '0.82rem', color: '#6a6f73' }}>
                     {type === 'course' 
@@ -295,17 +314,19 @@ export default function PaymentCheckoutModal({
                 </div>
 
                 <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                  <span style={{ fontSize: '0.78rem', color: '#6a6f73', display: 'block' }}>Học phí</span>
+                  <span style={{ fontSize: '0.78rem', color: '#6a6f73', display: 'block' }}>
+                    {isOption1Booking ? 'Phí môi giới' : 'Học phí'}
+                  </span>
                   <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#a435f0' }}>
                     {formatVND(totalAmount)}
                   </span>
                 </div>
               </div>
 
-              {/* Escrow Guarantee Box */}
+              {/* Escrow / Guarantee Box */}
               <div style={{ 
-                background: '#f5f3ff', 
-                border: '1px solid #ddd6fe', 
+                background: isOption1Booking ? '#fdf4ff' : '#f5f3ff', 
+                border: isOption1Booking ? '1px solid #f5d0fe' : '1px solid #ddd6fe', 
                 borderRadius: 8, 
                 padding: '14px 16px', 
                 marginBottom: 20,
@@ -313,12 +334,14 @@ export default function PaymentCheckoutModal({
                 gap: 12,
                 alignItems: 'flex-start'
               }}>
-                <ShieldCheck size={22} color="#7c3aed" style={{ flexShrink: 0, marginTop: 2 }} />
-                <div style={{ fontSize: '0.84rem', lineHeight: 1.45, color: '#4c1d95' }}>
-                  <strong>Cơ chế Ký quỹ An toàn (Escrow):</strong>{' '}
+                <ShieldCheck size={22} color={isOption1Booking ? '#a435f0' : '#7c3aed'} style={{ flexShrink: 0, marginTop: 2 }} />
+                <div style={{ fontSize: '0.84rem', lineHeight: 1.45, color: isOption1Booking ? '#701a75' : '#4c1d95' }}>
+                  <strong>{isOption1Booking ? 'Cam kết Dịch vụ Môi giới:' : (type === 'course' ? 'Cam kết Khóa học Video:' : 'Cơ chế Ký quỹ An toàn (Escrow):')}</strong>{' '}
                   {type === 'course' 
-                    ? 'Học phí của bạn được hệ thống tiếp nhận an toàn và kích hoạt ngay bài giảng Google Meet.'
-                    : 'Số tiền học phí sẽ được tạm giữ trong tài khoản ký quỹ của EduTutor và CHỈ giải ngân cho gia sư sau khi bạn xác nhận buổi học hoàn thành.'}
+                    ? 'Học phí được tiếp nhận an toàn. Bạn sở hữu trọn bộ video bài giảng quay sẵn trọn đời và được hoàn tiền trong 7 ngày nếu không hài lòng.'
+                    : (isOption1Booking 
+                        ? 'EduTutor thu phí dịch vụ môi giới một lần. Thông tin liên hệ gia sư được mở khóa ngay và hỗ trợ bảo hành đổi gia sư nếu không phù hợp.'
+                        : 'Học phí được giữ an toàn trong ví Ký quỹ EduTutor và CHỈ giải ngân cho gia sư sau khi bạn xác nhận hoàn thành các buổi học qua Google Meet.')}
                 </div>
               </div>
 
@@ -450,10 +473,14 @@ export default function PaymentCheckoutModal({
                   {isPaying ? (
                     <>
                       <Loader2 size={18} className="animate-spin" style={{ display: 'inline', marginRight: 8 }} />
-                      Đang xử lý ký quỹ...
+                      Đang xử lý giao dịch...
                     </>
                   ) : (
-                    `Xác nhận Ký quỹ Thanh toán (${formatVND(totalAmount)})`
+                    isOption1Booking 
+                      ? `Thanh toán Phí Môi Giới (${formatVND(totalAmount)})` 
+                      : (type === 'course' 
+                          ? `Xác nhận Mua Khóa Học (${formatVND(totalAmount)})` 
+                          : `Xác nhận Ký Quỹ Học Phí (${formatVND(totalAmount)})`)
                   )}
                 </button>
               </div>

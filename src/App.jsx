@@ -374,7 +374,7 @@ export default function App() {
       await cartApi.checkout();
       await loadUserEnrollments();
       await loadCartAndWishlist(currentUser);
-      alert('🎉 Thanh toán & Ghi danh thành công tất cả khóa học trong giỏ hàng! Các phòng học Google Meet đã được mở khóa.');
+      alert('🎉 Thanh toán & Ghi danh thành công tất cả khóa học trong giỏ hàng! Toàn bộ video bài giảng đã được mở khóa.');
     } catch (err) {
       alert('Lỗi thanh toán giỏ hàng: ' + (err.data?.message || err.message));
       throw err;
@@ -466,7 +466,7 @@ export default function App() {
         if (!course.price || course.price === 0) {
           await courseApi.enrollCourse(course.id);
           setEnrolledCourseIds(prev => [...prev, course.id]);
-          alert(`🎉 Chúc mừng! Bạn đã đăng ký thành công khóa học miễn phí "${course.title}". Toàn bộ phòng học Google Meet đã được kích hoạt!`);
+          alert(`🎉 Chúc mừng! Bạn đã đăng ký thành công khóa học miễn phí "${course.title}". Toàn bộ video bài giảng đã được mở khóa!`);
           return true;
         }
 
@@ -482,7 +482,7 @@ export default function App() {
         if (enrollment) {
           if (enrollment.status === 'ACTIVE' || enrollment.status === 'COMPLETED') {
             setEnrolledCourseIds(prev => [...prev, course.id]);
-            alert(`Bạn đã đăng ký khóa học "${course.title}" rồi! Toàn bộ phòng học Google Meet đã sẵn sàng.`);
+            alert(`Bạn đã đăng ký khóa học "${course.title}" rồi! Toàn bộ video bài giảng đã sẵn sàng.`);
             return true;
           }
 
@@ -528,7 +528,7 @@ export default function App() {
           }
         } catch (e) { }
         setEnrolledCourseIds(prev => [...prev, course.id]);
-        alert(`Bạn đã ghi danh khóa học này trước đó rồi! Hãy tham gia các buổi học Google Meet trực tuyến.`);
+        alert(`Bạn đã ghi danh khóa học này trước đó rồi! Toàn bộ video bài giảng đã sẵn sàng để bạn học.`);
         return true;
       }
       alert(`Đăng ký khóa học không thành công: ${errMsg}`);

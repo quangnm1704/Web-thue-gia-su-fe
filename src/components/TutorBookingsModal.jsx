@@ -15,7 +15,9 @@ import {
   ArrowRight,
   ShieldCheck,
   CreditCard,
-  Check
+  Check,
+  Video,
+  Sparkles
 } from 'lucide-react';
 import { bookingApi } from '../services/api';
 
@@ -184,6 +186,9 @@ export default function TutorBookingsModal({
                 const isPendingPayment = booking.status === 'PENDING_PAYMENT';
                 const isEscrowHeld = booking.status === 'PENDING_CONFIRMATION' || booking.status === 'CONFIRMED';
                 const isCompleted = booking.status === 'COMPLETED';
+                const isOption1 = booking.packageName?.includes('Môi Giới') || 
+                                  booking.platformFeePercent === 100 || 
+                                  (booking.totalPrice <= 300000 && booking.platformFee === booking.totalPrice);
 
                 return (
                   <div 
@@ -206,17 +211,26 @@ export default function TutorBookingsModal({
                         <span style={{ fontSize: '0.82rem', color: '#6a6f73' }}>
                           {new Date(booking.createdAt).toLocaleString('vi-VN')}
                         </span>
+                        {isOption1 ? (
+                          <span style={{ background: '#fdf4ff', color: '#86198f', border: '1px solid #f0abfc', padding: '2px 8px', borderRadius: 4, fontSize: '0.72rem', fontWeight: 700 }}>
+                            🎯 OPTION 1: MÔI GIỚI NGOÀI
+                          </span>
+                        ) : (
+                          <span style={{ background: '#eff6ff', color: '#1e40af', border: '1px solid #93c5fd', padding: '2px 8px', borderRadius: 4, fontSize: '0.72rem', fontWeight: 700 }}>
+                            💻 OPTION 2: TRỰC TUYẾN 1-1
+                          </span>
+                        )}
                       </div>
 
                       <div>
                         {isPendingPayment && (
                           <span style={{ background: '#fef3c7', color: '#92400e', padding: '4px 12px', borderRadius: 100, fontSize: '0.8rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-                            ⏳ Chờ thanh toán ký quỹ
+                            {isOption1 ? '⏳ Chờ thanh toán phí môi giới' : '⏳ Chờ thanh toán ký quỹ'}
                           </span>
                         )}
                         {isEscrowHeld && (
-                          <span style={{ background: '#dbeafe', color: '#1e40af', padding: '4px 12px', borderRadius: 100, fontSize: '0.8rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-                            🔒 Đã ký quỹ (Đang học)
+                          <span style={{ background: isOption1 ? '#f0fdf4' : '#dbeafe', color: isOption1 ? '#15803d' : '#1e40af', padding: '4px 12px', borderRadius: 100, fontSize: '0.8rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                            {isOption1 ? '✅ Đã mở khóa liên hệ' : '🔒 Đã ký quỹ (Đang học)'}
                           </span>
                         )}
                         {isCompleted && (
@@ -236,7 +250,7 @@ export default function TutorBookingsModal({
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14, marginBottom: 16 }}>
                       <div>
                         <span style={{ fontSize: '0.8rem', color: '#6a6f73', display: 'block', marginBottom: 2 }}>
-                          {isTutor ? 'Học viên đăng ký:' : 'Gia sư hướng dẫn:'}
+                          {isTutor ? 'Học viên liên hệ:' : 'Gia sư hướng dẫn:'}
                         </span>
                         <strong style={{ fontSize: '1rem', color: '#1c1d1f', display: 'flex', alignItems: 'center', gap: 6 }}>
                           <User size={16} color="#a435f0" />
@@ -248,22 +262,22 @@ export default function TutorBookingsModal({
 
                       <div>
                         <span style={{ fontSize: '0.8rem', color: '#6a6f73', display: 'block', marginBottom: 2 }}>
-                          Gói dịch vụ thuê kèm:
+                          {isOption1 ? 'Gói môi giới kết nối:' : 'Gói dạy kèm trực tuyến:'}
                         </span>
                         <strong style={{ fontSize: '0.95rem', color: '#1c1d1f', display: 'flex', alignItems: 'center', gap: 6 }}>
                           <BookOpen size={16} color="#0d6832" />
-                          {booking.packageName || 'Gói gia sư 1-1'}
+                          {booking.packageName || 'Gói dịch vụ gia sư'}
                         </strong>
                       </div>
 
                       <div>
                         <span style={{ fontSize: '0.8rem', color: '#6a6f73', display: 'block', marginBottom: 2 }}>
-                          {isTutor ? 'Thu nhập gia sư:' : 'Học phí thanh toán:'}
+                          {isOption1 ? 'Phí dịch vụ môi giới:' : (isTutor ? 'Thu nhập gia sư:' : 'Học phí ký quỹ:')}
                         </span>
                         <strong style={{ fontSize: '1.15rem', color: '#a435f0', fontFamily: 'Outfit, sans-serif' }}>
-                          {formatVND(isTutor ? booking.tutorIncome : booking.totalPrice)}
+                          {formatVND(isOption1 ? booking.totalPrice : (isTutor ? booking.tutorIncome : booking.totalPrice))}
                         </strong>
-                        {isTutor && (
+                        {isTutor && !isOption1 && (
                           <div style={{ fontSize: '0.75rem', color: '#6a6f73' }}>
                             (Học phí: {formatVND(booking.totalPrice)} - Phí sàn: {formatVND(booking.platformFee)})
                           </div>
@@ -271,16 +285,37 @@ export default function TutorBookingsModal({
                       </div>
                     </div>
 
+                    {/* Unlocked Contact Box for Option 1 */}
+                    {isOption1 && !isPendingPayment && (
+                      <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 6, padding: '10px 14px', marginBottom: 14, fontSize: '0.85rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#166534', fontWeight: 700, marginBottom: 4 }}>
+                          <Phone size={14} /> Thông tin liên hệ trực tiếp gia sư đã mở khóa:
+                        </div>
+                        <div style={{ color: '#14532d' }}>
+                          SĐT / Zalo: <strong>0987.654.321</strong> • Email: <strong>{booking.tutorName?.toLowerCase().replace(/\s+/g, '') || 'giasu'}@gmail.com</strong>
+                        </div>
+                        <div style={{ fontSize: '0.78rem', color: '#15803d', marginTop: 4 }}>
+                          💡 Hai bên tự do sắp xếp lịch dạy trực tiếp và tự thỏa thuận học phí ngoài theo mô hình thuần môi giới.
+                        </div>
+                      </div>
+                    )}
+
                     {/* Actions / Escrow Bar */}
                     <div style={{ borderTop: '1px solid #f2f3f5', paddingTop: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.82rem', color: '#0d6832' }}>
                         <ShieldCheck size={16} />
                         <span>
-                          {isPendingPayment 
-                            ? 'Cần hoàn tất thanh toán để khóa lịch gia sư' 
-                            : (isEscrowHeld 
-                                ? 'Học phí được bảo vệ trong ví Ký quỹ EduTutor' 
-                                : 'Giao dịch hoàn tất thành công')}
+                          {isOption1 ? (
+                            isPendingPayment 
+                              ? 'Cần hoàn tất phí môi giới để mở khóa thông tin liên hệ'
+                              : 'Đã hoàn tất kết nối môi giới thành công'
+                          ) : (
+                            isPendingPayment 
+                              ? 'Cần hoàn tất thanh toán để ký quỹ và giữ lịch gia sư' 
+                              : (isEscrowHeld 
+                                  ? 'Học phí được giữ an toàn trong ví Ký quỹ EduTutor' 
+                                  : 'Giao dịch hoàn tất thành công')
+                          )}
                         </span>
                       </div>
 
@@ -294,18 +329,39 @@ export default function TutorBookingsModal({
                               onClose();
                               onOpenCheckout({
                                 type: 'booking',
-                                item: booking,
+                                item: { ...booking, isOption1 },
                                 bookingId: booking.id,
                                 amount: booking.totalPrice
                               });
                             }}
                           >
-                            <CreditCard size={15} /> Thanh toán Ký quỹ ngay
+                            <CreditCard size={15} /> {isOption1 ? 'Thanh toán Phí Môi Giới' : 'Thanh toán Ký quỹ ngay'}
                           </button>
                         )}
 
-                        {/* Student action to complete & release escrow */}
-                        {!isTutor && isEscrowHeld && (
+                        {/* Option 2: Enter Google Meet */}
+                        {!isOption1 && isEscrowHeld && (
+                          <a 
+                            href="https://meet.google.com/edututor-1on1-booking" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="btn btn-outline"
+                            style={{ 
+                              fontSize: '0.85rem', 
+                              padding: '7px 14px', 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              gap: 6,
+                              color: '#1a73e8',
+                              borderColor: '#1a73e8'
+                            }}
+                          >
+                            <Video size={15} /> Vào Google Meet 1-1
+                          </a>
+                        )}
+
+                        {/* Student action to complete & release escrow (Option 2 only) */}
+                        {!isTutor && !isOption1 && isEscrowHeld && (
                           <button 
                             className="btn btn-primary"
                             style={{ 
@@ -326,7 +382,7 @@ export default function TutorBookingsModal({
                               </>
                             ) : (
                               <>
-                                <Check size={15} /> Hoàn tất & Giải ngân cho Gia sư
+                                <Check size={15} /> Xác nhận hoàn tất & Giải ngân
                               </>
                             )}
                           </button>

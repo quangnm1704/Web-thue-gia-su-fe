@@ -9,6 +9,7 @@ import {
   Lock,
   Video,
   Play, 
+  PlayCircle,
   Award, 
   Calendar,
   Loader2
@@ -29,12 +30,14 @@ export default function CourseDetailModal({
   const [isLoadingLessons, setIsLoadingLessons] = useState(false);
   const [isEnrolling, setIsEnrolling] = useState(false);
   const [localEnrolled, setLocalEnrolled] = useState(false);
+  const [activeVideoLesson, setActiveVideoLesson] = useState(null);
 
   // Load lessons whenever modal opens or course changes
   useEffect(() => {
     if (!isOpen || !course?.id) return;
 
     setLocalEnrolled(isEnrolled);
+    setActiveVideoLesson(null);
 
     async function fetchLessons() {
       setIsLoadingLessons(true);
@@ -45,17 +48,17 @@ export default function CourseDetailModal({
         } else {
           // Fallback lessons outline if backend returns empty
           setLessons([
-            { id: '1', title: 'Buổi 1: Giới thiệu tổng quan & Thiết lập môi trường', meetingUrl: 'https://meet.google.com/edututor-math-001' },
-            { id: '2', title: 'Buổi 2: Kiến thức nền tảng & Các dạng bài trọng tâm', meetingUrl: 'https://meet.google.com/edututor-math-002' },
-            { id: '3', title: 'Buổi 3: Luyện giải bài tập thực chiến & Hỏi đáp trực tiếp 1-1', meetingUrl: 'https://meet.google.com/edututor-math-003' }
+            { id: '1', title: 'Bài 1: Giới thiệu tổng quan & Thiết lập môi trường', mediaUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+            { id: '2', title: 'Bài 2: Kiến thức nền tảng & Các dạng bài trọng tâm', mediaUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+            { id: '3', title: 'Bài 3: Thực hành dự án thực chiến & Bài tập áp dụng', mediaUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' }
           ]);
         }
       } catch (err) {
         console.warn('Lỗi lấy bài học từ Backend:', err);
         setLessons([
-          { id: '1', title: 'Buổi 1: Giới thiệu tổng quan & Thiết lập môi trường', meetingUrl: 'https://meet.google.com/edututor-math-001' },
-          { id: '2', title: 'Buổi 2: Kiến thức nền tảng & Các dạng bài trọng tâm', meetingUrl: 'https://meet.google.com/edututor-math-002' },
-          { id: '3', title: 'Buổi 3: Luyện giải bài tập thực chiến & Hỏi đáp trực tiếp 1-1', meetingUrl: 'https://meet.google.com/edututor-math-003' }
+          { id: '1', title: 'Bài 1: Giới thiệu tổng quan & Thiết lập môi trường', mediaUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+          { id: '2', title: 'Bài 2: Kiến thức nền tảng & Các dạng bài trọng tâm', mediaUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+          { id: '3', title: 'Bài 3: Thực hành dự án thực chiến & Bài tập áp dụng', mediaUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' }
         ]);
       } finally {
         setIsLoadingLessons(false);
@@ -151,19 +154,47 @@ export default function CourseDetailModal({
               </div>
             </div>
 
-            {/* Online Lessons & Curriculum */}
+            {/* Active Video Player (When Enrolled) */}
+            {activeVideoLesson && effectivelyEnrolled && (
+              <div style={{ marginBottom: 20, background: '#1c1d1f', borderRadius: 8, overflow: 'hidden', border: '1px solid #3e4143' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 16px', background: '#2d2f31', color: '#fff' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <PlayCircle size={18} color="#a435f0" />
+                    <strong style={{ fontSize: '0.9rem' }}>Đang phát: {activeVideoLesson.title}</strong>
+                  </div>
+                  <button 
+                    onClick={() => setActiveVideoLesson(null)} 
+                    style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', padding: 4 }}
+                    title="Đóng video"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+                <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', background: '#000' }}>
+                  <iframe 
+                    src={activeVideoLesson.mediaUrl || 'https://www.youtube.com/embed/dQw4w9WgXcQ'} 
+                    title={activeVideoLesson.title}
+                    style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowFullScreen
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Recorded Video Curriculum */}
             <div className="course-curriculum-box">
               <div className="curriculum-header">
-                <h3>Lịch học trực tuyến & Bài giảng</h3>
+                <h3>Giáo trình & Video bài giảng quay sẵn</h3>
                 <span className="curriculum-meta">
-                  {lessons.length} buổi học • Trực tuyến qua Google Meet
+                  {lessons.length} video bài giảng • Học mọi lúc mọi nơi • Full HD
                 </span>
               </div>
 
               {isLoadingLessons ? (
                 <div style={{ textAlign: 'center', padding: '24px', color: '#6a6f73' }}>
                   <Loader2 size={24} className="animate-spin" style={{ margin: '0 auto 8px' }} />
-                  <p>Đang tải danh sách buổi học...</p>
+                  <p>Đang tải danh sách bài giảng...</p>
                 </div>
               ) : (
                 <div className="lessons-list">
@@ -174,25 +205,34 @@ export default function CourseDetailModal({
                         <div className="lesson-info">
                           <span className="lesson-title">{lesson.title}</span>
                           <span className="lesson-time">
-                            Hình thức: Trực tuyến 1-1 qua Google Meet
+                            Video bài giảng quay sẵn Full HD • Xem trọn đời
                           </span>
                         </div>
                       </div>
 
                       <div className="lesson-right">
                         {effectivelyEnrolled ? (
-                          <a 
-                            href={lesson.meetingUrl || 'https://meet.google.com'} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="btn-meet"
+                          <button 
+                            type="button"
+                            onClick={() => setActiveVideoLesson(lesson)}
+                            className="btn btn-primary"
+                            style={{ 
+                              fontSize: '0.82rem', 
+                              padding: '6px 14px', 
+                              display: 'inline-flex', 
+                              alignItems: 'center', 
+                              gap: 6,
+                              backgroundColor: activeVideoLesson?.id === lesson.id ? '#0d6832' : '#a435f0',
+                              borderColor: activeVideoLesson?.id === lesson.id ? '#0d6832' : '#a435f0',
+                              cursor: 'pointer'
+                            }}
                           >
-                            <Video size={15} />
-                            Vào Google Meet
-                          </a>
+                            <PlayCircle size={15} />
+                            {activeVideoLesson?.id === lesson.id ? 'Đang phát' : 'Xem video'}
+                          </button>
                         ) : (
-                          <span className="lesson-locked" title="Đăng ký khóa học để nhận link Google Meet">
-                            <Lock size={14} /> Link Meet khóa
+                          <span className="lesson-locked" title="Đăng ký khóa học để xem trọn bộ video bài giảng">
+                            <Lock size={14} /> Video khóa
                           </span>
                         )}
                       </div>
@@ -206,10 +246,10 @@ export default function CourseDetailModal({
             <div className="course-includes">
               <h4>Khóa học này bao gồm:</h4>
               <div className="includes-list">
-                <div className="inc-item"><Clock size={16} /> {course.hours || '24 giờ học'} tương tác trực tiếp</div>
-                <div className="inc-item"><BookOpen size={16} /> {lessons.length || 3} buổi kèm thực hành</div>
+                <div className="inc-item"><Clock size={16} /> {course.hours || '24 giờ'} video bài giảng chất lượng cao</div>
+                <div className="inc-item"><BookOpen size={16} /> {lessons.length || 3} video bài học theo lộ trình</div>
                 <div className="inc-item"><Award size={16} /> Chứng chỉ hoàn thành khóa học</div>
-                <div className="inc-item"><ShieldCheck size={16} /> Hỗ trợ giải đáp bài tập 24/7</div>
+                <div className="inc-item"><ShieldCheck size={16} /> Quyền sở hữu trọn đời & xem trên mọi thiết bị</div>
               </div>
             </div>
           </div>
@@ -242,9 +282,9 @@ export default function CourseDetailModal({
                   <div className="enrolled-success-box">
                     <Check size={20} />
                     <div>
-                      <strong>Đã đăng ký thành công!</strong>
+                      <strong>Đã sở hữu khóa học trọn đời!</strong>
                       <div style={{ fontSize: '0.8rem', marginTop: '2px' }}>
-                        Bạn có thể nhấn nút "Vào Google Meet" ở danh sách buổi học để vào lớp.
+                        Bạn có thể nhấn nút "Xem video" ở danh sách các bài học để bắt đầu học ngay.
                       </div>
                     </div>
                   </div>
