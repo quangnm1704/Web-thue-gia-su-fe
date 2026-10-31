@@ -14,7 +14,8 @@ import {
   LogOut,
   X,
   MessageCircle,
-  ShieldCheck
+  ShieldCheck,
+  Wallet
 } from 'lucide-react';
 import { categories } from '../data/mockData';
 
@@ -31,7 +32,9 @@ export default function Navbar({
   onOpenCart,
   onOpenWishlist,
   onOpenConversations,
-  onOpenAdmin
+  onOpenAdmin,
+  userWallet,
+  onOpenWallet
 }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [showCategories, setShowCategories] = useState(false);
@@ -199,6 +202,30 @@ export default function Navbar({
 
             {/* Icon buttons */}
             <div className="ud-icon-buttons">
+              {currentUser && (
+                <button 
+                  className="ud-wallet-btn" 
+                  title={`Ví EduTutor - Số dư: ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(userWallet?.availableBalance || 0)} (Bấm để nạp/xem chi tiết)`}
+                  onClick={onOpenWallet}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    padding: '5px 12px',
+                    borderRadius: 20,
+                    background: '#eff6ff',
+                    border: '1px solid #bfdbfe',
+                    color: '#1d4ed8',
+                    fontSize: '0.84rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    marginRight: 6
+                  }}
+                >
+                  <Wallet size={16} color="#2563eb" />
+                  <span>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(userWallet?.availableBalance || 0)}</span>
+                </button>
+              )}
               <button 
                 className="ud-icon-btn" 
                 title="Danh sách yêu thích"
@@ -336,6 +363,19 @@ export default function Navbar({
                       </span>
                     </div>
                     <div className="menu-divider"></div>
+                    <button 
+                      className="menu-item" 
+                      onClick={() => { setShowUserMenu(false); if (onOpenWallet) onOpenWallet(); }}
+                      style={{ width: '100%', textAlign: 'left', background: '#eff6ff', border: '1px solid #dbeafe', borderRadius: 4, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', marginBottom: 6 }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <Wallet size={16} color="#2563eb" />
+                        <span style={{ fontWeight: 600, color: '#1d4ed8' }}>Ví tiền EduTutor</span>
+                      </div>
+                      <strong style={{ color: '#1d4ed8', fontSize: '0.85rem' }}>
+                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(userWallet?.availableBalance || 0)}
+                      </strong>
+                    </button>
 
                     {/* Admin Dashboard Entry */}
                     {currentUser.role === 'ADMIN' && (

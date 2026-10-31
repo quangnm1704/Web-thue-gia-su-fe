@@ -13,11 +13,14 @@ import {
   Lock,
   Unlock,
   FileText,
-  DollarSign
+  DollarSign,
+  CreditCard
 } from 'lucide-react';
 import { conversationApi, brokeragePackageApi, bookingApi } from '../services/api';
 
-export default function BookTutorModal({ tutor, isOpen, onClose, currentUser, onOpenAuth, onOpenChat }) {
+export default function BookTutorModal({ tutor, isOpen, onClose, currentUser, onOpenAuth, onOpenChat,
+  onOpenCheckout
+}) {
   const [loading, setLoading] = useState(false);
   const [conversation, setConversation] = useState(null);
   const [packages, setPackages] = useState([]);
@@ -212,9 +215,28 @@ export default function BookTutorModal({ tutor, isOpen, onClose, currentUser, on
                 </div>
               </div>
 
-              <button className="btn btn-primary" onClick={onClose} style={{ padding: '12px 32px' }}>
-                Hoàn tất
-              </button>
+              <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+                <button 
+                  className="btn btn-primary" 
+                  onClick={() => {
+                    onClose();
+                    if (onOpenCheckout) {
+                      onOpenCheckout({
+                        type: 'booking',
+                        item: { ...selectedPackage, tutor, totalPrice: bookingSuccess.totalPrice },
+                        bookingId: bookingSuccess.id,
+                        amount: bookingSuccess.totalPrice
+                      });
+                    }
+                  }} 
+                  style={{ padding: '12px 24px', display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.95rem' }}
+                >
+                  <CreditCard size={18} /> Tiến hành Ký quỹ Thanh toán ngay
+                </button>
+                <button className="btn btn-outline" onClick={onClose} style={{ padding: '12px 24px', fontSize: '0.95rem' }}>
+                  Thanh toán sau
+                </button>
+              </div>
             </div>
           ) : (
             <div>

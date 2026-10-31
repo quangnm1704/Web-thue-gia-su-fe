@@ -82,9 +82,11 @@ export default function CourseDetailModal({
     setIsEnrolling(true);
     try {
       if (onEnroll) {
-        await onEnroll(course);
+        const success = await onEnroll(course);
+        if (success === true && (!course.price || course.price === 0)) {
+          setLocalEnrolled(true);
+        }
       }
-      setLocalEnrolled(true);
     } catch (err) {
       console.error('Đăng ký khóa học lỗi:', err);
     } finally {

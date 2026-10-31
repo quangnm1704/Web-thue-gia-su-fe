@@ -191,6 +191,13 @@ export const courseApi = {
   getMyEnrollments: async () => {
     return await request('/course-enrollments/me');
   },
+
+  // PATCH /course-enrollments/tutor/:enrollmentId/complete (Gia sư xác nhận hoàn tất khóa học)
+  completeEnrollment: async (enrollmentId) => {
+    return await request(`/course-enrollments/tutor/${enrollmentId}/complete`, {
+      method: 'PATCH',
+    });
+  },
 };
 
 /* ==================== 4. CONVERSATION & AGREEMENT ==================== */
@@ -282,6 +289,18 @@ export const bookingApi = {
     return await request(`/bookings/${id}/cancel`, {
       method: 'PATCH',
     });
+  },
+
+  // PATCH /bookings/:id/complete (Học viên hoàn thành & giải ngân ký quỹ cho gia sư)
+  completeBooking: async (id) => {
+    return await request(`/bookings/${id}/complete`, {
+      method: 'PATCH',
+    });
+  },
+
+  // GET /bookings/:id (Chi tiết đơn booking)
+  getBooking: async (id) => {
+    return await request(`/bookings/${id}`);
   },
 };
 
@@ -392,5 +411,67 @@ export const adminApi = {
   // GET /brokerage-packages/admin/get-all (Lấy tất cả gói môi giới)
   getAllPackages: async () => {
     return await request('/brokerage-packages/admin/get-all');
+  },
+};
+
+/* ==================== 11. WALLET & DEPOSIT ==================== */
+export const walletApi = {
+  // GET /wallets/user/:userId
+  getWalletByUserId: async (userId) => {
+    return await request(`/wallets/user/${userId}`);
+  },
+
+  // GET /wallets/:id
+  getWallet: async (id) => {
+    return await request(`/wallets/${id}`);
+  },
+
+  // POST /wallet/deposits
+  createDeposit: async (amount) => {
+    return await request('/wallet/deposits', {
+      method: 'POST',
+      body: JSON.stringify({ amount: Number(amount) }),
+    });
+  },
+
+  // POST /wallet/deposits/:referenceCode/confirm
+  confirmDeposit: async (referenceCode) => {
+    return await request(`/wallet/deposits/${referenceCode}/confirm`, {
+      method: 'POST',
+    });
+  },
+};
+
+/* ==================== 12. MOCK PAYMENT GATEWAY ==================== */
+export const mockPaymentApi = {
+  // POST /mock-payments/:referenceCode/success
+  simulateSuccess: async (referenceCode) => {
+    return await request(`/mock-payments/${referenceCode}/success`, {
+      method: 'POST',
+    });
+  },
+
+  // POST /mock-payments/:referenceCode/failure
+  simulateFailure: async (referenceCode) => {
+    return await request(`/mock-payments/${referenceCode}/failure`, {
+      method: 'POST',
+    });
+  },
+};
+
+/* ==================== 13. PAYMENT (ESCROW HOLD) ==================== */
+export const paymentApi = {
+  // POST /enrollment-payments/:enrollmentId/payment
+  payForEnrollment: async (enrollmentId) => {
+    return await request(`/enrollment-payments/${enrollmentId}/payment`, {
+      method: 'POST',
+    });
+  },
+
+  // POST /booking-payments/:bookingId/payment
+  payForBooking: async (bookingId) => {
+    return await request(`/booking-payments/${bookingId}/payment`, {
+      method: 'POST',
+    });
   },
 };

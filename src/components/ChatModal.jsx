@@ -27,6 +27,7 @@ export default function ChatModal({
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
+  const [isAgreeing, setIsAgreeing] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const messagesEndRef = useRef(null);
 
@@ -224,6 +225,63 @@ export default function ChatModal({
         <div style={{ padding: '8px 24px', background: '#f7f9fa', borderBottom: '1px solid #e4e8eb', fontSize: '0.8rem', color: '#6a6f73', display: 'flex', justifyContent: 'space-between' }}>
           <span>🔒 Tin nhắn được lưu trữ an toàn trong CSDL PostgreSQL giữa hai bên.</span>
           <span style={{ color: '#0d6832', fontWeight: 600 }}>Tự động đồng bộ Realtime</span>
+        </div>
+
+        {/* Agreement Status Bar */}
+        <div style={{ 
+          padding: '10px 24px', 
+          background: conversation?.status === 'AGREED' ? '#f0fdf4' : '#fefce8', 
+          borderBottom: conversation?.status === 'AGREED' ? '1px solid #bbf7d0' : '1px solid #fef08a', 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center', 
+          fontSize: '0.84rem' 
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            {conversation?.status === 'AGREED' ? (
+              <>
+                <CheckCheck size={18} color="#16a34a" />
+                <span style={{ color: '#166534', fontWeight: 600 }}>
+                  ✅ Hai bên đã thống nhất điều kiện & lịch học!
+                </span>
+              </>
+            ) : (
+              <>
+                <Clock size={16} color="#ca8a04" />
+                <span style={{ color: '#854d0e' }}>
+                  💬 Hãy trao đổi và chốt lịch học qua tin nhắn trước khi đặt lịch.
+                </span>
+              </>
+            )}
+          </div>
+
+          <div style={{ display: 'flex', gap: 8 }}>
+            {currentUser?.role === 'STUDENT' && conversation?.status !== 'AGREED' && (
+              <button 
+                className="btn btn-outline btn-sm"
+                onClick={handleAgree}
+                disabled={isAgreeing}
+                style={{ fontSize: '0.8rem', padding: '4px 12px', background: '#fff', borderColor: '#ca8a04', color: '#854d0e', fontWeight: 600 }}
+              >
+                {isAgreeing ? 'Đang xác nhận...' : '🤝 Xác nhận thỏa thuận'}
+              </button>
+            )}
+
+            {currentUser?.role === 'STUDENT' && tutor && onOpenBook && (
+              <button 
+                className="btn btn-primary btn-sm"
+                onClick={() => { onClose(); onOpenBook(tutor); }}
+                style={{ 
+                  fontSize: '0.82rem', 
+                  padding: '4px 14px', 
+                  background: conversation?.status === 'AGREED' ? '#16a34a' : '#a435f0',
+                  borderColor: conversation?.status === 'AGREED' ? '#16a34a' : '#a435f0'
+                }}
+              >
+                <Calendar size={14} /> {conversation?.status === 'AGREED' ? 'Chọn Gói & Ký quỹ' : 'Đặt lịch'}
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Chat Messages Body */}

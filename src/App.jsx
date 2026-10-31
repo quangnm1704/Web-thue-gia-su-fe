@@ -19,6 +19,8 @@ import WishlistModal from './components/WishlistModal';
 import ConversationsModal from './components/ConversationsModal';
 import ArticlePostModal from './components/ArticlePostModal';
 import AdminDashboardModal from './components/AdminDashboardModal';
+import PaymentCheckoutModal from './components/PaymentCheckoutModal';
+import WalletTopUpModal from './components/WalletTopUpModal';
 import { topTutors, featuredCourses, communityArticles } from './data/mockData';
 import { 
   authApi, 
@@ -28,6 +30,7 @@ import {
   cartApi, 
   wishlistApi, 
   conversationApi,
+  walletApi,
   checkBackendHealth,
   getRoleFromToken,
   parseJwtPayload 
@@ -50,6 +53,18 @@ export default function App() {
   const [tutorBookingsModalOpen, setTutorBookingsModalOpen] = useState(false);
   const [adminDashboardModalOpen, setAdminDashboardModalOpen] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
+
+  // Wallet & Payment Checkout State
+  const [walletModalOpen, setWalletModalOpen] = useState(false);
+  const [userWallet, setUserWallet] = useState({ availableBalance: 0, holdingBalance: 0 });
+  const [checkoutModalOpen, setCheckoutModalOpen] = useState(false);
+  const [checkoutData, setCheckoutData] = useState({
+    type: 'course',
+    item: null,
+    enrollmentId: null,
+    bookingId: null,
+    amount: 0
+  });
   const [enrolledCourseIds, setEnrolledCourseIds] = useState([]);
 
   // Chat & Messenger Modal State
@@ -352,7 +367,7 @@ export default function App() {
     setChatModalOpen(true);
   };
 
-  // Enroll Course (tích hợp API POST /course-enrollments)
+    // Enroll Course & Payment Workflow
   const handleEnrollCourse = async (course) => {
     if (!currentUser) {
       handleOpenAuth('login');
@@ -360,10 +375,49 @@ export default function App() {
     }
     try {
       if (isBackendOnline) {
-        await courseApi.enrollCourse(course.id);
-        setEnrolledCourseIds(prev => [...prev, course.id]);
-        alert(`🎉 Chúc mừng! Bạn đã đăng ký thành công khóa học "${course.title}". Các link phòng học Google Meet đã được kích hoạt!`);
-        return true;
+        // Nếu khóa học miễn phí
+        if (!course.price || course.price === 0) {
+          await courseApi.enrollCourse(course.id);
+          setEnrolledCourseIds(prev => [...prev, course.id]);
+          alert(`🎉 Chúc mừng! Bạn đã đăng ký thành công khóa học miễn phí "${course.title}". Toàn bộ phòng học Google Meet đã được kích hoạt!`);
+          return true;
+        }
+
+        // Kiểm tra xem đã có đơn ghi danh trước đó chưa
+        let enrollment = null;
+        try {
+          const myEnrolls = await courseApi.getMyEnrollments();
+          enrollment = (myEnrolls || []).find(e => e.courseId === course.id);
+        } catch (e) {
+          // ignore
+        }
+
+        if (enrollment) {
+          if (enrollment.status === 'ACTIVE' || enrollment.status === 'COMPLETED') {
+            setEnrolledCourseIds(prev => [...prev, course.id]);
+            alert(`Bạn đã đăng ký khóa học "${course.title}" rồi! Toàn bộ phòng học Google Meet đã sẵn sàng.`);
+            return true;
+          }
+
+          // Khóa học đang ở trạng thái PENDING -> mở Checkout thanh toán
+          handleOpenCheckout({
+            type: 'course',
+            item: course,
+            enrollmentId: enrollment.id,
+            amount: course.price
+          });
+          return false;
+        }
+
+        // Tạo đơn ghi danh mới (status PENDING từ Backend)
+        const res = await courseApi.enrollCourse(course.id);
+        handleOpenCheckout({
+          type: 'course',
+          item: course,
+          enrollmentId: res?.id,
+          amount: course.price
+        });
+        return false;
       } else {
         setEnrolledCourseIds(prev => [...prev, course.id]);
         alert(`[Chế độ UI] Đã kích hoạt khóa học "${course.title}" thành công!`);
@@ -372,6 +426,20 @@ export default function App() {
     } catch (err) {
       const errMsg = err?.data?.message || err.message;
       if (errMsg.includes('already enrolled') || errMsg.includes('đã đăng ký') || err.status === 400) {
+        // Thử mở checkout nếu có pending
+        try {
+          const myEnrolls = await courseApi.getMyEnrollments();
+          const pending = (myEnrolls || []).find(e => e.courseId === course.id && e.status === 'PENDING');
+          if (pending) {
+            handleOpenCheckout({
+              type: 'course',
+              item: course,
+              enrollmentId: pending.id,
+              amount: course.price
+            });
+            return false;
+          }
+        } catch (e) {}
         setEnrolledCourseIds(prev => [...prev, course.id]);
         alert(`Bạn đã ghi danh khóa học này trước đó rồi! Hãy tham gia các buổi học Google Meet trực tuyến.`);
         return true;
@@ -472,6 +540,8 @@ export default function App() {
         onOpenBookings={() => setTutorBookingsModalOpen(true)}
         onOpenCart={() => setCartModalOpen(true)}
         onOpenWishlist={() => setWishlistModalOpen(true)}
+        userWallet={userWallet}
+        onOpenWallet={() => setWalletModalOpen(true)}
         onOpenConversations={() => {
           if (!currentUser) {
             handleOpenAuth('login');
@@ -587,6 +657,7 @@ export default function App() {
         currentUser={currentUser}
         onOpenAuth={handleOpenAuth}
         onOpenChat={handleChatTutor}
+        onOpenCheckout={handleOpenCheckout}
       />
 
       <TutorBookingsModal 
@@ -594,6 +665,8 @@ export default function App() {
         onClose={() => setTutorBookingsModalOpen(false)}
         currentUser={currentUser}
         onOpenChat={handleOpenChatWithStudent}
+        onOpenCheckout={handleOpenCheckout}
+        onWalletUpdated={() => loadUserWallet(currentUser)}
       />
 
       <ChatModal 
@@ -658,6 +731,26 @@ export default function App() {
         onClose={() => setAdminDashboardModalOpen(false)}
         currentUser={currentUser}
         onDeleteArticle={handleDeleteArticle}
+      />
+
+      <PaymentCheckoutModal 
+        isOpen={checkoutModalOpen}
+        onClose={() => setCheckoutModalOpen(false)}
+        type={checkoutData.type}
+        item={checkoutData.item}
+        enrollmentId={checkoutData.enrollmentId}
+        bookingId={checkoutData.bookingId}
+        amount={checkoutData.amount}
+        currentUser={currentUser}
+        onSuccess={handlePaymentSuccess}
+        onOpenTopUp={() => setWalletModalOpen(true)}
+      />
+
+      <WalletTopUpModal 
+        isOpen={walletModalOpen}
+        onClose={() => setWalletModalOpen(false)}
+        currentUser={currentUser}
+        onWalletUpdated={(w) => setUserWallet(w)}
       />
     </div>
   );
