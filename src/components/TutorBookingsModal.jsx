@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  X, 
-  GraduationCap, 
-  User, 
-  Calendar, 
-  Clock, 
-  DollarSign, 
-  CheckCircle2, 
-  AlertCircle, 
-  Loader2, 
-  Mail, 
+import {
+  X,
+  GraduationCap,
+  User,
+  Calendar,
+  Clock,
+  DollarSign,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
+  Mail,
   Phone,
   BookOpen,
   ArrowRight,
@@ -21,10 +21,10 @@ import {
 } from 'lucide-react';
 import { bookingApi } from '../services/api';
 
-export default function TutorBookingsModal({ 
-  isOpen, 
-  onClose, 
-  currentUser, 
+export default function TutorBookingsModal({
+  isOpen,
+  onClose,
+  currentUser,
   onOpenChat,
   onOpenCheckout,
   onWalletUpdated
@@ -96,9 +96,9 @@ export default function TutorBookingsModal({
 
   return (
     <div className="ud-modal-backdrop" onClick={onClose} style={{ zIndex: 1100 }}>
-      <div 
-        className="ud-detail-modal-card animate-fade-in" 
-        style={{ maxWidth: 880, maxHeight: '90vh', overflowY: 'auto' }} 
+      <div
+        className="ud-detail-modal-card animate-fade-in"
+        style={{ maxWidth: 880, maxHeight: '90vh', overflowY: 'auto' }}
         onClick={(e) => e.stopPropagation()}
       >
         <button className="ud-modal-close" onClick={onClose}>
@@ -112,12 +112,12 @@ export default function TutorBookingsModal({
               {isTutor ? 'Trung tâm Quản lý Gia sư' : 'Lịch học 1-1 Cá nhân'}
             </span>
             <h2 className="detail-title" style={{ fontSize: '1.6rem', marginTop: 8 }}>
-              {isTutor 
-                ? '📋 Yêu cầu đặt lịch thuê Gia sư 1-1' 
+              {isTutor
+                ? '📋 Yêu cầu đặt lịch thuê Gia sư 1-1'
                 : '📅 Đơn thuê Gia sư 1-1 của tôi'}
             </h2>
             <p className="detail-sub">
-              {isTutor 
+              {isTutor
                 ? `Danh sách các học viên đã đặt lịch kèm với bạn. Tiền ký quỹ được giữ an toàn trên hệ thống.`
                 : `Theo dõi tiến độ, thanh toán ký quỹ và giải ngân học phí cho gia sư sau khi hoàn tất.`}
             </p>
@@ -175,7 +175,7 @@ export default function TutorBookingsModal({
               <GraduationCap size={48} color="#8c8c8c" style={{ margin: '0 auto 12px' }} />
               <h4 style={{ fontSize: '1.1rem', color: '#1c1d1f', marginBottom: 6 }}>Chưa có yêu cầu đặt lịch nào</h4>
               <p style={{ color: '#6a6f73', fontSize: '0.9rem', maxWidth: 450, margin: '0 auto' }}>
-                {isTutor 
+                {isTutor
                   ? 'Hiện tại chưa có học viên nào gửi yêu cầu thuê gia sư. Khi có học viên đăng ký, thông báo sẽ xuất hiện tại đây.'
                   : 'Bạn chưa đặt lịch với gia sư nào. Hãy tìm gia sư phù hợp và nhắn tin thỏa thuận lịch học.'}
               </p>
@@ -186,12 +186,12 @@ export default function TutorBookingsModal({
                 const isPendingPayment = booking.status === 'PENDING_PAYMENT';
                 const isEscrowHeld = booking.status === 'PENDING_CONFIRMATION' || booking.status === 'CONFIRMED';
                 const isCompleted = booking.status === 'COMPLETED';
-                const isOption1 = booking.packageName?.includes('Môi Giới') || 
-                                  booking.platformFeePercent === 100 || 
-                                  (booking.totalPrice <= 300000 && booking.platformFee === booking.totalPrice);
+                const isOption1 = booking.packageName?.includes('Môi Giới') ||
+                  booking.platformFeePercent === 100 ||
+                  (booking.totalPrice <= 300000 && booking.platformFee === booking.totalPrice);
 
                 return (
-                  <div 
+                  <div
                     key={booking.id}
                     style={{
                       border: '1px solid #e4e8eb',
@@ -229,186 +229,187 @@ export default function TutorBookingsModal({
                           </span>
                         )}
                         {isEscrowHeld && (
-                          <span style={{ background: isOption1 ? '#f0fdf4' : '#dbeafe', color: isOption1 ? '#15803d' : '#1e40af', padding: '4px 12px', borderRadius: 100, fontSize: '0.8rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-                            {isOption1 ? '✅ Đã mở khóa liên hệ' : '🔒 Đã ký quỹ (Đang học)'}
-                          </span>
+                            <span style={{ background: isOption1 ? '#f0fdf4' : '#dbeafe', color: isOption1 ? '#15803d' : '#1e40af', padding: '4px 12px', borderRadius: 100, fontSize: '0.8rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                              {isOption1 ? '✅ Đã mở khóa liên hệ' : '🔒 Đã ký quỹ (Đang học)'}
+                            </span>
                         )}
-                        {isCompleted && (
-                          <span style={{ background: '#dcfce7', color: '#166534', padding: '4px 12px', borderRadius: 100, fontSize: '0.8rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-                            ✅ Hoàn tất & Đã giải ngân
-                          </span>
-                        )}
-                        {!isPendingPayment && !isEscrowHeld && !isCompleted && (
-                          <span style={{ background: '#f1f5f9', color: '#475569', padding: '4px 12px', borderRadius: 100, fontSize: '0.8rem', fontWeight: 700 }}>
-                            {booking.status}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Body Info */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14, marginBottom: 16 }}>
-                      <div>
-                        <span style={{ fontSize: '0.8rem', color: '#6a6f73', display: 'block', marginBottom: 2 }}>
-                          {isTutor ? 'Học viên liên hệ:' : 'Gia sư hướng dẫn:'}
-                        </span>
-                        <strong style={{ fontSize: '1rem', color: '#1c1d1f', display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <User size={16} color="#a435f0" />
-                          {isTutor 
-                            ? (booking.studentName || 'Học viên #' + booking.studentId.substring(0, 6))
-                            : (booking.tutorName || 'Gia sư chuyên môn')}
-                        </strong>
-                      </div>
-
-                      <div>
-                        <span style={{ fontSize: '0.8rem', color: '#6a6f73', display: 'block', marginBottom: 2 }}>
-                          {isOption1 ? 'Gói môi giới kết nối:' : 'Gói dạy kèm trực tuyến:'}
-                        </span>
-                        <strong style={{ fontSize: '0.95rem', color: '#1c1d1f', display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <BookOpen size={16} color="#0d6832" />
-                          {booking.packageName || 'Gói dịch vụ gia sư'}
-                        </strong>
-                      </div>
-
-                      <div>
-                        <span style={{ fontSize: '0.8rem', color: '#6a6f73', display: 'block', marginBottom: 2 }}>
-                          {isOption1 ? 'Phí dịch vụ môi giới:' : (isTutor ? 'Thu nhập gia sư:' : 'Học phí ký quỹ:')}
-                        </span>
-                        <strong style={{ fontSize: '1.15rem', color: '#a435f0', fontFamily: 'Outfit, sans-serif' }}>
-                          {formatVND(isOption1 ? booking.totalPrice : (isTutor ? booking.tutorIncome : booking.totalPrice))}
-                        </strong>
-                        {isTutor && !isOption1 && (
-                          <div style={{ fontSize: '0.75rem', color: '#6a6f73' }}>
-                            (Học phí: {formatVND(booking.totalPrice)} - Phí sàn: {formatVND(booking.platformFee)})
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Unlocked Contact Box for Option 1 */}
-                    {isOption1 && !isPendingPayment && (
-                      <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 6, padding: '10px 14px', marginBottom: 14, fontSize: '0.85rem' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#166534', fontWeight: 700, marginBottom: 4 }}>
-                          <Phone size={14} /> Thông tin liên hệ trực tiếp gia sư đã mở khóa:
-                        </div>
-                        <div style={{ color: '#14532d' }}>
-                          SĐT / Zalo: <strong>0987.654.321</strong> • Email: <strong>{booking.tutorName?.toLowerCase().replace(/\s+/g, '') || 'giasu'}@gmail.com</strong>
-                        </div>
-                        <div style={{ fontSize: '0.78rem', color: '#15803d', marginTop: 4 }}>
-                          💡 Hai bên tự do sắp xếp lịch dạy trực tiếp và tự thỏa thuận học phí ngoài theo mô hình thuần môi giới.
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Actions / Escrow Bar */}
-                    <div style={{ borderTop: '1px solid #f2f3f5', paddingTop: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.82rem', color: '#0d6832' }}>
-                        <ShieldCheck size={16} />
-                        <span>
-                          {isOption1 ? (
-                            isPendingPayment 
-                              ? 'Cần hoàn tất phí môi giới để mở khóa thông tin liên hệ'
-                              : 'Đã hoàn tất kết nối môi giới thành công'
-                          ) : (
-                            isPendingPayment 
-                              ? 'Cần hoàn tất thanh toán để ký quỹ và giữ lịch gia sư' 
-                              : (isEscrowHeld 
-                                  ? 'Học phí được giữ an toàn trong ví Ký quỹ EduTutor' 
-                                  : 'Giao dịch hoàn tất thành công')
-                          )}
-                        </span>
-                      </div>
-
-                      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                        {/* Student action to pay if PENDING_PAYMENT */}
-                        {!isTutor && isPendingPayment && onOpenCheckout && (
-                          <button 
-                            className="btn btn-primary"
-                            style={{ fontSize: '0.85rem', padding: '7px 16px', display: 'flex', alignItems: 'center', gap: 6 }}
-                            onClick={() => {
-                              onClose();
-                              onOpenCheckout({
-                                type: 'booking',
-                                item: { ...booking, isOption1 },
-                                bookingId: booking.id,
-                                amount: booking.totalPrice
-                              });
-                            }}
-                          >
-                            <CreditCard size={15} /> {isOption1 ? 'Thanh toán Phí Môi Giới' : 'Thanh toán Ký quỹ ngay'}
-                          </button>
-                        )}
-
-                        {/* Option 2: Enter Google Meet */}
-                        {!isOption1 && isEscrowHeld && (
-                          <a 
-                            href="https://meet.google.com/edututor-1on1-booking" 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="btn btn-outline"
-                            style={{ 
-                              fontSize: '0.85rem', 
-                              padding: '7px 14px', 
-                              display: 'flex', 
-                              alignItems: 'center', 
-                              gap: 6,
-                              color: '#1a73e8',
-                              borderColor: '#1a73e8'
-                            }}
-                          >
-                            <Video size={15} /> Vào Google Meet 1-1
-                          </a>
-                        )}
-
-                        {/* Student action to complete & release escrow (Option 2 only) */}
-                        {!isTutor && !isOption1 && isEscrowHeld && (
-                          <button 
-                            className="btn btn-primary"
-                            style={{ 
-                              fontSize: '0.85rem', 
-                              padding: '7px 16px', 
-                              backgroundColor: '#16a34a', 
-                              borderColor: '#16a34a',
-                              display: 'flex', 
-                              alignItems: 'center', 
-                              gap: 6 
-                            }}
-                            onClick={() => handleCompleteBooking(booking.id)}
-                            disabled={completingId === booking.id}
-                          >
-                            {completingId === booking.id ? (
-                              <>
-                                <Loader2 size={14} className="animate-spin" /> Đang giải ngân...
-                              </>
-                            ) : (
-                              <>
-                                <Check size={15} /> Xác nhận hoàn tất & Giải ngân
-                              </>
+                            {isCompleted && (
+                              <span style={{ background: '#dcfce7', color: '#166534', padding: '4px 12px', borderRadius: 100, fontSize: '0.8rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                                ✅ Hoàn tất & Đã giải ngân
+                              </span>
                             )}
-                          </button>
-                        )}
+                            {!isPendingPayment && !isEscrowHeld && !isCompleted && (
+                              <span style={{ background: '#f1f5f9', color: '#475569', padding: '4px 12px', borderRadius: 100, fontSize: '0.8rem', fontWeight: 700 }}>
+                                {booking.status}
+                              </span>
+                            )}
+                          </div>
+                    </div>
 
-                        {isTutor && (
-                          <button 
-                            className="btn btn-outline" 
-                            style={{ fontSize: '0.85rem', padding: '6px 14px' }}
-                            onClick={() => {
-                              onClose();
-                              if (onOpenChat) onOpenChat({ id: booking.studentId, displayName: booking.studentName });
-                            }}
-                          >
-                            💬 Nhắn tin học viên
-                          </button>
-                        )}
+                      {/* Body Info */}
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14, marginBottom: 16 }}>
+                        <div>
+                          <span style={{ fontSize: '0.8rem', color: '#6a6f73', display: 'block', marginBottom: 2 }}>
+                            {isTutor ? 'Học viên liên hệ:' : 'Gia sư hướng dẫn:'}
+                          </span>
+                          <strong style={{ fontSize: '1rem', color: '#1c1d1f', display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <User size={16} color="#a435f0" />
+                            {isTutor
+                              ? (booking.studentName || 'Học viên #' + booking.studentId.substring(0, 6))
+                              : (booking.tutorName || 'Gia sư chuyên môn')}
+                          </strong>
+                        </div>
+
+                        <div>
+                          <span style={{ fontSize: '0.8rem', color: '#6a6f73', display: 'block', marginBottom: 2 }}>
+                            {isOption1 ? 'Gói môi giới kết nối:' : 'Gói dạy kèm trực tuyến:'}
+                          </span>
+                          <strong style={{ fontSize: '0.95rem', color: '#1c1d1f', display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <BookOpen size={16} color="#0d6832" />
+                            {booking.packageName || 'Gói dịch vụ gia sư'}
+                          </strong>
+                        </div>
+
+                        <div>
+                          <span style={{ fontSize: '0.8rem', color: '#6a6f73', display: 'block', marginBottom: 2 }}>
+                            {isOption1 ? 'Phí dịch vụ môi giới:' : (isTutor ? 'Thu nhập gia sư:' : 'Học phí ký quỹ:')}
+                          </span>
+                          <strong style={{ fontSize: '1.15rem', color: '#a435f0', fontFamily: 'Outfit, sans-serif' }}>
+                            {formatVND(isOption1 ? booking.totalPrice : (isTutor ? booking.tutorIncome : booking.totalPrice))}
+                          </strong>
+                            { isTutor && !isOption1 && (
+                              <div style={{ fontSize: '0.75rem', color: '#6a6f73' }}>
+                                (Học phí: {formatVND(booking.totalPrice)} - Phí sàn: {formatVND(booking.platformFee)})
+                              </div>
+                            )}
+                        </div>
+                      </div>
+
+                      {/* Unlocked Contact Box for Option 1 */}
+                      {isOption1 && !isPendingPayment && (
+                        <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 6, padding: '10px 14px', marginBottom: 14, fontSize: '0.85rem' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#166534', fontWeight: 700, marginBottom: 4 }}>
+                            <Phone size={14} /> Thông tin liên hệ trực tiếp gia sư đã mở khóa:
+                          </div>
+                          <div style={{ color: '#14532d' }}>
+                            SĐT / Zalo: <strong>0987.654.321</strong> • Email: <strong>{booking.tutorName?.toLowerCase().replace(/\s+/g, '') || 'giasu'}@gmail.com</strong>
+                          </div>
+                          <div style={{ fontSize: '0.78rem', color: '#15803d', marginTop: 4 }}>
+                            💡 Hai bên tự do sắp xếp lịch dạy trực tiếp và tự thỏa thuận học phí ngoài theo mô hình thuần môi giới.
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Actions / Escrow Bar */}
+                      <div style={{ borderTop: '1px solid #f2f3f5', paddingTop: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.82rem', color: '#0d6832' }}>
+                          <ShieldCheck size={16} />
+                          <span>
+                            {isOption1 ? (
+                              isPendingPayment
+                                ? 'Cần hoàn tất phí môi giới để mở khóa thông tin liên hệ'
+                                : 'Đã hoàn tất kết nối môi giới thành công'
+                            ) : (
+                              isPendingPayment
+                                ? 'Cần hoàn tất thanh toán để ký quỹ và giữ lịch gia sư'
+                                : (isEscrowHeld
+                                  ? 'Học phí được giữ an toàn trong ví Ký quỹ EduTutor'
+                                  : 'Giao dịch hoàn tất thành công')
+                            )}
+                          </span>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                          {/* Student action to pay if PENDING_PAYMENT */}
+                          {!isTutor && isPendingPayment && onOpenCheckout && (
+                            <button
+                              className="btn btn-primary"
+                              style={{ fontSize: '0.85rem', padding: '7px 16px', display: 'flex', alignItems: 'center', gap: 6 }}
+                              onClick={() => {
+                                onClose();
+                                onOpenCheckout({
+                                  type: 'booking',
+                                  item: { ...booking, isOption1 },
+                                  bookingId: booking.id,
+                                  amount: booking.totalPrice
+                                });
+                              }}
+                            >
+                              <CreditCard size={15} /> {isOption1 ? 'Thanh toán Phí Môi Giới' : 'Thanh toán Ký quỹ ngay'}
+                            </button>
+                          )}
+
+                            {/* Option 2: Enter Google Meet */ }
+                        {!isOption1 && isEscrowHeld && (
+                            <a
+                              href="https://meet.google.com/edututor-1on1-booking"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="btn btn-outline"
+                              style={{
+                                fontSize: '0.85rem',
+                                padding: '7px 14px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 6,
+                                color: '#1a73e8',
+                                borderColor: '#1a73e8'
+                              }}
+                            >
+                              <Video size={15} /> Vào Google Meet 1-1
+                            </a>
+                          )}
+
+                          {/* Student action to complete & release escrow (Option 2 only) */}
+                          {!isTutor && !isOption1 && isEscrowHeld && (
+                            <button
+                              className="btn btn-primary"
+                              style={{
+                                fontSize: '0.85rem',
+                                padding: '7px 16px',
+                                backgroundColor: '#16a34a',
+                                borderColor: '#16a34a',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 6
+                              }}
+                              onClick={() => handleCompleteBooking(booking.id)}
+                              disabled={completingId === booking.id}
+                            >
+                              {completingId === booking.id ? (
+                                <>
+                                  <Loader2 size={14} className="animate-spin" /> Đang giải ngân...
+                                </>
+                              ) : (
+                                <>
+                                  <Check size={15} /> Xác nhận hoàn tất & Giải ngân
+                                </>
+                              )}
+                            </button>
+                          )}
+
+                          {isTutor && (
+                            <button
+                              className="btn btn-outline"
+                              style={{ fontSize: '0.85rem', padding: '6px 14px' }}
+                              onClick={() => {
+                                onClose();
+                                if (onOpenChat) onOpenChat({ id: booking.studentId, displayName: booking.studentName });
+                              }}
+                            >
+                              💬 Nhắn tin học viên
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
+                    );
               })}
-            </div>
-          )}
+                  </div>
+                )
+              }
         </div>
       </div>
-    </div>
-  );
+      </div>
+      );
 }

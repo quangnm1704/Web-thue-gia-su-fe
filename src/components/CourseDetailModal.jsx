@@ -1,26 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  X, 
-  Star, 
-  Check, 
-  Clock, 
-  BookOpen, 
-  ShieldCheck, 
+import {
+  X,
+  Star,
+  Check,
+  Clock,
+  BookOpen,
+  ShieldCheck,
   Lock,
   Video,
-  Play, 
+  Play,
   PlayCircle,
-  Award, 
+  Award,
   Calendar,
   Loader2
 } from 'lucide-react';
 import { courseApi } from '../services/api';
 
-export default function CourseDetailModal({ 
-  course, 
-  isOpen, 
-  onClose, 
-  onEnroll, 
+export default function CourseDetailModal({
+  course,
+  isOpen,
+  onClose,
+  onEnroll,
   isEnrolled = false,
   currentUser = null,
   onOpenAuth = null,
@@ -124,10 +124,10 @@ export default function CourseDetailModal({
             </div>
 
             <div className="detail-instructor-author">
-              <img 
-                src={course.instructorAvatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'} 
-                alt={course.instructor} 
-                className="author-img" 
+              <img
+                src={course.instructorAvatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'}
+                alt={course.instructor}
+                className="author-img"
               />
               <div>
                 <span>Giảng viên: <strong>{course.instructor || 'Gia sư EduTutor'}</strong></span>
@@ -162,8 +162,8 @@ export default function CourseDetailModal({
                     <PlayCircle size={18} color="#a435f0" />
                     <strong style={{ fontSize: '0.9rem' }}>Đang phát: {activeVideoLesson.title}</strong>
                   </div>
-                  <button 
-                    onClick={() => setActiveVideoLesson(null)} 
+                  <button
+                    onClick={() => setActiveVideoLesson(null)}
                     style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', padding: 4 }}
                     title="Đóng video"
                   >
@@ -171,11 +171,11 @@ export default function CourseDetailModal({
                   </button>
                 </div>
                 <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', background: '#000' }}>
-                  <iframe 
-                    src={activeVideoLesson.mediaUrl || 'https://www.youtube.com/embed/dQw4w9WgXcQ'} 
+                  <iframe
+                    src={activeVideoLesson.mediaUrl || 'https://www.youtube.com/embed/dQw4w9WgXcQ'}
                     title={activeVideoLesson.title}
                     style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                   />
                 </div>
@@ -229,98 +229,98 @@ export default function CourseDetailModal({
                           >
                             <PlayCircle size={15} />
                             {activeVideoLesson?.id === lesson.id ? 'Đang phát' : 'Xem video'}
-                          </button>
-                        ) : (
-                          <span className="lesson-locked" title="Đăng ký khóa học để xem trọn bộ video bài giảng">
-                            <Lock size={14} /> Video khóa
-                          </span>
+                      </button>
+                      ) : (
+                        <span className="lesson-locked" title="Đăng ký khóa học để xem trọn bộ video bài giảng">
+                          <Lock size={14} /> Video khóa
+                        </span>
                         )}
-                      </div>
                     </div>
-                  ))}
-                </div>
+                    </div>
+              ))}
+            </div>
               )}
-            </div>
-
-            {/* Course Features */}
-            <div className="course-includes">
-              <h4>Khóa học này bao gồm:</h4>
-              <div className="includes-list">
-                <div className="inc-item"><Clock size={16} /> {course.hours || '24 giờ'} video bài giảng chất lượng cao</div>
-                <div className="inc-item"><BookOpen size={16} /> {lessons.length || 3} video bài học theo lộ trình</div>
-                <div className="inc-item"><Award size={16} /> Chứng chỉ hoàn thành khóa học</div>
-                <div className="inc-item"><ShieldCheck size={16} /> Quyền sở hữu trọn đời & xem trên mọi thiết bị</div>
-              </div>
-            </div>
           </div>
 
-          {/* Sticky Pricing Sidebar */}
-          <div className="detail-sidebar">
-            <div className="detail-card-preview">
-              <div className="preview-video-box">
-                <img src={course.thumbnail} alt={course.title} className="video-thumb" />
-                <div className="play-overlay">
-                  <div className="play-btn-circle">
-                    <Play size={24} fill="#ffffff" />
-                  </div>
-                  <span>Xem trước khóa học</span>
+          {/* Course Features */}
+          <div className="course-includes">
+            <h4>Khóa học này bao gồm:</h4>
+            <div className="includes-list">
+              <div className="inc-item"><Clock size={16} /> {course.hours || '24 giờ'} video bài giảng chất lượng cao</div>
+              <div className="inc-item"><BookOpen size={16} /> {lessons.length || 3} video bài học theo lộ trình</div>
+              <div className="inc-item"><Award size={16} /> Chứng chỉ hoàn thành khóa học</div>
+              <div className="inc-item"><ShieldCheck size={16} /> Quyền sở hữu trọn đời & xem trên mọi thiết bị</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Sticky Pricing Sidebar */}
+        <div className="detail-sidebar">
+          <div className="detail-card-preview">
+            <div className="preview-video-box">
+              <img src={course.thumbnail} alt={course.title} className="video-thumb" />
+              <div className="play-overlay">
+                <div className="play-btn-circle">
+                  <Play size={24} fill="#ffffff" />
                 </div>
+                <span>Xem trước khóa học</span>
+              </div>
+            </div>
+
+            <div className="sidebar-pricing">
+              <div className="price-row">
+                <span className="huge-price">{formatVND(course.price)}</span>
+                {course.originalPrice && (
+                  <span className="strike-price">{formatVND(course.originalPrice)}</span>
+                )}
+                {course.discount && (
+                  <span className="discount-pill">{course.discount}</span>
+                )}
               </div>
 
-              <div className="sidebar-pricing">
-                <div className="price-row">
-                  <span className="huge-price">{formatVND(course.price)}</span>
-                  {course.originalPrice && (
-                    <span className="strike-price">{formatVND(course.originalPrice)}</span>
-                  )}
-                  {course.discount && (
-                    <span className="discount-pill">{course.discount}</span>
-                  )}
-                </div>
-
-                {effectivelyEnrolled ? (
-                  <div className="enrolled-success-box">
-                    <Check size={20} />
-                    <div>
-                      <strong>Đã sở hữu khóa học trọn đời!</strong>
-                      <div style={{ fontSize: '0.8rem', marginTop: '2px' }}>
-                        Bạn có thể nhấn nút "Xem video" ở danh sách các bài học để bắt đầu học ngay.
-                      </div>
+              {effectivelyEnrolled ? (
+                <div className="enrolled-success-box">
+                  <Check size={20} />
+                  <div>
+                    <strong>Đã sở hữu khóa học trọn đời!</strong>
+                    <div style={{ fontSize: '0.8rem', marginTop: '2px' }}>
+                      Bạn có thể nhấn nút "Xem video" ở danh sách các bài học để bắt đầu học ngay.
                     </div>
                   </div>
-                ) : (
-                  <div className="pricing-actions">
-                    <button 
-                      className="btn btn-primary btn-block btn-lg" 
-                      onClick={handleEnrollClick}
-                      disabled={isEnrolling}
-                    >
-                      {isEnrolling ? (
-                        <>
-                          <Loader2 size={18} className="animate-spin" style={{ display: 'inline', marginRight: 6 }} />
-                          Đang xử lý đăng ký...
-                        </>
-                      ) : (
-                        'Đăng ký học ngay'
-                      )}
-                    </button>
-                    <button 
-                      className="btn btn-outline btn-block"
-                      onClick={() => onAddToCart && onAddToCart(course)}
-                    >
-                      Thêm vào giỏ hàng
-                    </button>
-                  </div>
-                )}
+                </div>
+              ) : (
+                <div className="pricing-actions">
+                  <button
+                    className="btn btn-primary btn-block btn-lg"
+                    onClick={handleEnrollClick}
+                    disabled={isEnrolling}
+                  >
+                    {isEnrolling ? (
+                      <>
+                        <Loader2 size={18} className="animate-spin" style={{ display: 'inline', marginRight: 6 }} />
+                        Đang xử lý đăng ký...
+                      </>
+                    ) : (
+                      'Đăng ký học ngay'
+                    )}
+                  </button>
+                  <button
+                    className="btn btn-outline btn-block"
+                    onClick={() => onAddToCart && onAddToCart(course)}
+                  >
+                    Thêm vào giỏ hàng
+                  </button>
+                </div>
+              )}
 
-                <p className="guarantee-note">
-                  Đảm bảo hoàn tiền trong 7 ngày nếu không hài lòng.
-                </p>
-              </div>
+              <p className="guarantee-note">
+                Đảm bảo hoàn tiền trong 7 ngày nếu không hài lòng.
+              </p>
             </div>
           </div>
         </div>
       </div>
     </div>
+    </div >
   );
 }
