@@ -54,7 +54,8 @@ export default function Navbar({
   courses = [],
   tutors = [],
   onSelectCourse = null,
-  onSelectTutor = null
+  onSelectTutor = null,
+  onOpenTutorApplication = null
 }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [showCategories, setShowCategories] = useState(false);
@@ -415,7 +416,14 @@ export default function Navbar({
             <a href="#articles" className="ud-nav-link hide-mobile">
               Diễn đàn
             </a>
-            <a href="#become-tutor" className="ud-nav-link ud-tutor-cta hide-mobile">
+            <a 
+              href="#become-tutor" 
+              className="ud-nav-link ud-tutor-cta hide-mobile"
+              onClick={(e) => {
+                e.preventDefault();
+                if (onOpenTutorApplication) onOpenTutorApplication();
+              }}
+            >
               Trở thành Gia sư
             </a>
 

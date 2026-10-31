@@ -416,77 +416,126 @@ export default function AdminDashboardModal({ isOpen, onClose, currentUser, onDe
                       key={app.id} 
                       style={{ 
                         border: '1px solid #e2e8f0', 
-                        borderRadius: 8, 
-                        padding: '16px 20px', 
+                        borderRadius: 10, 
+                        padding: '18px 22px', 
                         display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'space-between',
-                        background: '#fff' 
+                        flexDirection: 'column',
+                        gap: 12,
+                        background: '#fff',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
                       }}
                     >
-                      <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                          <h4 style={{ margin: 0, fontSize: '1rem', color: '#0f172a' }}>Mã đơn: {app.id.substring(0, 8)}...</h4>
-                          <span style={{ 
-                            fontSize: '0.75rem', 
-                            fontWeight: 700, 
-                            padding: '2px 8px', 
-                            borderRadius: 100,
-                            backgroundColor: app.status === 'APPROVED' ? '#dcfce7' : (app.status === 'REJECTED' ? '#fee2e2' : '#fef3c7'),
-                            color: app.status === 'APPROVED' ? '#15803d' : (app.status === 'REJECTED' ? '#b91c1c' : '#b45309')
-                          }}>
-                            {app.status}
-                          </span>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 }}>
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+                            <h4 style={{ margin: 0, fontSize: '1.05rem', color: '#0f172a', fontWeight: 700 }}>
+                              {app.userName || `Ứng viên ID: ${app.userId ? app.userId.substring(0, 8) : 'N/A'}`}
+                            </h4>
+                            {app.userEmail && (
+                              <span style={{ fontSize: '0.85rem', color: '#64748b' }}>({app.userEmail})</span>
+                            )}
+                            <span style={{ 
+                              fontSize: '0.75rem', 
+                              fontWeight: 700, 
+                              padding: '3px 10px', 
+                              borderRadius: 100,
+                              backgroundColor: app.status === 'APPROVED' ? '#dcfce7' : (app.status === 'REJECTED' ? '#fee2e2' : '#fef3c7'),
+                              color: app.status === 'APPROVED' ? '#15803d' : (app.status === 'REJECTED' ? '#b91c1c' : '#b45309')
+                            }}>
+                              {app.status === 'APPROVED' ? 'ĐÃ DUYỆT' : (app.status === 'REJECTED' ? 'ĐÃ TỪ CHỐI' : 'CHỜ DUYỆT')}
+                            </span>
+                          </div>
+
+                          <div style={{ fontSize: '0.82rem', color: '#64748b', display: 'flex', gap: 16 }}>
+                            <span>Mã hồ sơ: <code>{app.id.substring(0, 8)}...</code></span>
+                            {app.createdAt && (
+                              <span>Ngày nộp: {new Date(app.createdAt).toLocaleDateString('vi-VN')}</span>
+                            )}
+                          </div>
                         </div>
-                        <div style={{ fontSize: '0.85rem', color: '#64748b', display: 'flex', gap: 16 }}>
-                          <span>Học viên ID: <code>{app.userId ? app.userId.substring(0, 8) : 'N/A'}</code></span>
-                          {app.cvUrl && (
-                            <a href={app.cvUrl} target="_blank" rel="noreferrer" style={{ color: '#a435f0', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                              <FileText size={14} /> Xem CV ứng tuyển <ExternalLink size={12} />
-                            </a>
-                          )}
-                        </div>
-                        {app.adminNote && (
-                          <div style={{ marginTop: 6, fontSize: '0.82rem', color: '#b91c1c', fontStyle: 'italic' }}>
-                            Ghi chú: {app.adminNote}
+
+                        {app.status === 'PENDING' && (
+                          <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+                            <button
+                              onClick={() => handleApproveApplication(app.id)}
+                              disabled={processingId === app.id}
+                              style={{
+                                padding: '8px 16px',
+                                borderRadius: 6,
+                                border: 'none',
+                                backgroundColor: '#16a34a',
+                                color: '#fff',
+                                fontSize: '0.85rem',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 6
+                              }}
+                            >
+                              <CheckCircle size={15} /> Phê duyệt Gia sư
+                            </button>
+                            <button
+                              onClick={() => handleRejectApplication(app.id)}
+                              disabled={processingId === app.id}
+                              style={{
+                                padding: '8px 16px',
+                                borderRadius: 6,
+                                border: '1px solid #fca5a5',
+                                backgroundColor: '#fff',
+                                color: '#dc2626',
+                                fontSize: '0.85rem',
+                                fontWeight: 700,
+                                cursor: 'pointer'
+                              }}
+                            >
+                              Từ chối
+                            </button>
                           </div>
                         )}
                       </div>
 
-                      {app.status === 'PENDING' && (
-                        <div style={{ display: 'flex', gap: 8 }}>
-                          <button
-                            onClick={() => handleApproveApplication(app.id)}
-                            disabled={processingId === app.id}
-                            style={{
-                              padding: '6px 14px',
-                              borderRadius: 6,
-                              border: 'none',
-                              backgroundColor: '#16a34a',
-                              color: '#fff',
-                              fontSize: '0.82rem',
-                              fontWeight: 700,
-                              cursor: 'pointer'
-                            }}
-                          >
-                            Duyệt
-                          </button>
-                          <button
-                            onClick={() => handleRejectApplication(app.id)}
-                            disabled={processingId === app.id}
-                            style={{
-                              padding: '6px 14px',
-                              borderRadius: 6,
-                              border: 'none',
-                              backgroundColor: '#dc2626',
-                              color: '#fff',
-                              fontSize: '0.82rem',
-                              fontWeight: 700,
-                              cursor: 'pointer'
-                            }}
-                          >
-                            Từ chối
-                          </button>
+                      {/* Details Content */}
+                      <div style={{ background: '#f8fafc', padding: '12px 16px', borderRadius: 8, fontSize: '0.88rem', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        {app.subjectsCanTeach && (
+                          <div>
+                            <strong style={{ color: '#334155' }}>Môn đăng ký dạy: </strong>
+                            <span style={{ color: '#0f172a' }}>{app.subjectsCanTeach}</span>
+                          </div>
+                        )}
+                        {app.bio && (
+                          <div>
+                            <strong style={{ color: '#334155' }}>Giới thiệu & Kinh nghiệm: </strong>
+                            <span style={{ color: '#475569', whiteSpace: 'pre-line' }}>{app.bio}</span>
+                          </div>
+                        )}
+                        <div style={{ display: 'flex', gap: 20, marginTop: 4, flexWrap: 'wrap' }}>
+                          {app.cvUrl && (
+                            <a 
+                              href={app.cvUrl} 
+                              target="_blank" 
+                              rel="noreferrer" 
+                              style={{ color: '#a435f0', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 5 }}
+                            >
+                              <FileText size={15} /> Mở CV / Bằng cấp ứng tuyển <ExternalLink size={13} />
+                            </a>
+                          )}
+                          {app.testSubmission && (
+                            <a 
+                              href={app.testSubmission} 
+                              target="_blank" 
+                              rel="noreferrer" 
+                              style={{ color: '#2563eb', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 5 }}
+                            >
+                              <ExternalLink size={14} /> Mở Video dạy thử / Bài test <ExternalLink size={13} />
+                            </a>
+                          )}
+                        </div>
+                      </div>
+
+                      {app.adminNote && (
+                        <div style={{ fontSize: '0.82rem', color: '#b91c1c', fontStyle: 'italic', background: '#fef2f2', padding: '6px 12px', borderRadius: 4 }}>
+                          Ghi chú Admin: {app.adminNote}
                         </div>
                       )}
                     </div>

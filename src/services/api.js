@@ -475,3 +475,26 @@ export const paymentApi = {
     });
   },
 };
+
+/* ==================== 14. TUTOR APPLICATION API ==================== */
+export const tutorApplicationApi = {
+  // POST /tutor-applications (Nộp đơn ứng tuyển gia sư)
+  createApplication: async (data) => {
+    return await request('/tutor-applications', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  // GET /tutor-applications (Lấy đơn ứng tuyển của tôi)
+  getMyApplication: async () => {
+    return await request('/tutor-applications');
+  },
+
+  // DELETE /tutor-applications (Hủy đơn ứng tuyển của tôi)
+  deleteMyApplication: async () => {
+    return await request('/tutor-applications', {
+      method: 'DELETE',
+    });
+  },
+};

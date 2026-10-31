@@ -21,19 +21,20 @@ import ArticlePostModal from './components/ArticlePostModal';
 import AdminDashboardModal from './components/AdminDashboardModal';
 import PaymentCheckoutModal from './components/PaymentCheckoutModal';
 import WalletTopUpModal from './components/WalletTopUpModal';
+import TutorApplicationModal from './components/TutorApplicationModal';
 import { topTutors, featuredCourses, communityArticles } from './data/mockData';
-import { 
-  authApi, 
-  articleApi, 
-  courseApi, 
-  bookingApi, 
-  cartApi, 
-  wishlistApi, 
+import {
+  authApi,
+  articleApi,
+  courseApi,
+  bookingApi,
+  cartApi,
+  wishlistApi,
   conversationApi,
   walletApi,
   checkBackendHealth,
   getRoleFromToken,
-  parseJwtPayload 
+  parseJwtPayload
 } from './services/api';
 import { formatCourseFromBackend } from './utils/courseAdapter';
 import { GraduationCap, ArrowRight, Wifi, WifiOff } from 'lucide-react';
@@ -67,6 +68,7 @@ export default function App() {
   const [selectedTutorForBooking, setSelectedTutorForBooking] = useState(null);
   const [tutorBookingsModalOpen, setTutorBookingsModalOpen] = useState(false);
   const [adminDashboardModalOpen, setAdminDashboardModalOpen] = useState(false);
+  const [tutorApplicationModalOpen, setTutorApplicationModalOpen] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
 
   // Wallet & Payment Checkout State
@@ -103,10 +105,10 @@ export default function App() {
     if (keyword) {
       setTimeout(() => {
         const clean = removeVietnameseTones(keyword);
-        const hasTutorMatch = topTutors.some(t => 
+        const hasTutorMatch = topTutors.some(t =>
           removeVietnameseTones(t.name).includes(clean)
         );
-        const hasCourseMatch = courses.some(c => 
+        const hasCourseMatch = courses.some(c =>
           removeVietnameseTones(c.title).includes(clean)
         );
         if (hasTutorMatch && !hasCourseMatch) {
@@ -121,12 +123,12 @@ export default function App() {
   // Lọc danh sách gia sư hiển thị theo từ khóa tìm kiếm (nếu có)
   const cleanSearchTerm = removeVietnameseTones(searchKeyword);
   const displayedTutors = cleanSearchTerm
-    ? topTutors.filter(t => 
-        removeVietnameseTones(t.name).includes(cleanSearchTerm) ||
-        removeVietnameseTones(t.title).includes(cleanSearchTerm) ||
-        removeVietnameseTones(t.degree).includes(cleanSearchTerm) ||
-        (t.subjects && t.subjects.some(s => removeVietnameseTones(s).includes(cleanSearchTerm)))
-      )
+    ? topTutors.filter(t =>
+      removeVietnameseTones(t.name).includes(cleanSearchTerm) ||
+      removeVietnameseTones(t.title).includes(cleanSearchTerm) ||
+      removeVietnameseTones(t.degree).includes(cleanSearchTerm) ||
+      (t.subjects && t.subjects.some(s => removeVietnameseTones(s).includes(cleanSearchTerm)))
+    )
     : topTutors;
 
   // Lấy số lượng cuộc trò chuyện Messenger từ CSDL
@@ -452,7 +454,7 @@ export default function App() {
     setChatModalOpen(true);
   };
 
-    // Enroll Course & Payment Workflow
+  // Enroll Course & Payment Workflow
   const handleEnrollCourse = async (course) => {
     if (!currentUser) {
       handleOpenAuth('login');
@@ -524,7 +526,7 @@ export default function App() {
             });
             return false;
           }
-        } catch (e) {}
+        } catch (e) { }
         setEnrolledCourseIds(prev => [...prev, course.id]);
         alert(`Bạn đã ghi danh khóa học này trước đó rồi! Hãy tham gia các buổi học Google Meet trực tuyến.`);
         return true;
@@ -614,7 +616,7 @@ export default function App() {
       </div>
 
       {/* 1. Header / Navbar */}
-      <Navbar 
+      <Navbar
         currentUser={currentUser}
         onOpenAuth={handleOpenAuth}
         onLogout={handleLogout}
@@ -640,11 +642,12 @@ export default function App() {
         onSearch={handleSearch}
         onSelectCourse={(course) => setSelectedCourse(course)}
         onSelectTutor={(tutor) => handleBookTutor(tutor)}
+        onOpenTutorApplication={() => setTutorApplicationModalOpen(true)}
       />
 
       <main>
         {/* 2. Hero Udemy Banner */}
-        <HeroBanner 
+        <HeroBanner
           onExploreCourses={() => {
             document.getElementById('courses')?.scrollIntoView({ behavior: 'smooth' });
           }}
@@ -658,7 +661,7 @@ export default function App() {
         <ValueProps />
 
         {/* 4. Filterable Courses Section (Connected to Backend Courses) */}
-        <CourseTabs 
+        <CourseTabs
           courses={courses}
           onSelectCourse={(course) => setSelectedCourse(course)}
           onAddToCart={handleAddToCart}
@@ -689,8 +692,8 @@ export default function App() {
             <div className="ud-tutors-grid">
               {displayedTutors.length > 0 ? (
                 displayedTutors.map((tutor) => (
-                  <TutorCard 
-                    key={tutor.id} 
+                  <TutorCard
+                    key={tutor.id}
                     tutor={tutor}
                     onBookTutor={handleBookTutor}
                     onChatTutor={handleChatTutor}
@@ -709,7 +712,7 @@ export default function App() {
         <CategoriesGrid onSelectCategory={(catId) => alert(`Lọc theo danh mục: ${catId}`)} />
 
         {/* 7. Community Articles & Forum (Connected to Backend Articles) */}
-        <ArticlesSection 
+        <ArticlesSection
           articles={articles}
           onOpenArticle={(art) => setSelectedArticle(art)}
           onCreateArticle={handleCreateArticle}
@@ -718,7 +721,7 @@ export default function App() {
         />
 
         {/* 8. Become Instructor Banner */}
-        <BecomeTutorBanner onApplyTutor={() => handleOpenAuth('register')} />
+        <BecomeTutorBanner onApplyTutor={() => setTutorApplicationModalOpen(true)} />
 
         {/* 9. Student Testimonials */}
         <Testimonials />
@@ -728,14 +731,14 @@ export default function App() {
       <Footer />
 
       {/* Modals */}
-      <AuthModal 
+      <AuthModal
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
         initialMode={authMode}
         onLoginSuccess={handleLoginSuccess}
       />
 
-      <CourseDetailModal 
+      <CourseDetailModal
         course={selectedCourse}
         isOpen={!!selectedCourse}
         onClose={() => setSelectedCourse(null)}
@@ -746,7 +749,7 @@ export default function App() {
         onOpenAuth={handleOpenAuth}
       />
 
-      <BookTutorModal 
+      <BookTutorModal
         tutor={selectedTutorForBooking}
         isOpen={!!selectedTutorForBooking}
         onClose={() => {
@@ -759,7 +762,7 @@ export default function App() {
         onOpenCheckout={handleOpenCheckout}
       />
 
-      <TutorBookingsModal 
+      <TutorBookingsModal
         isOpen={tutorBookingsModalOpen}
         onClose={() => setTutorBookingsModalOpen(false)}
         currentUser={currentUser}
@@ -768,7 +771,7 @@ export default function App() {
         onWalletUpdated={() => loadUserWallet(currentUser)}
       />
 
-      <ChatModal 
+      <ChatModal
         isOpen={chatModalOpen}
         onClose={() => {
           setChatModalOpen(false);
@@ -785,7 +788,7 @@ export default function App() {
         }}
       />
 
-      <ConversationsModal 
+      <ConversationsModal
         isOpen={conversationsModalOpen}
         onClose={() => setConversationsModalOpen(false)}
         currentUser={currentUser}
@@ -795,7 +798,7 @@ export default function App() {
         }}
       />
 
-      <CartModal 
+      <CartModal
         isOpen={cartModalOpen}
         onClose={() => setCartModalOpen(false)}
         cartItems={cartItems}
@@ -806,7 +809,7 @@ export default function App() {
         courses={courses}
       />
 
-      <WishlistModal 
+      <WishlistModal
         isOpen={wishlistModalOpen}
         onClose={() => setWishlistModalOpen(false)}
         wishlistItems={wishlistItems}
@@ -816,7 +819,7 @@ export default function App() {
         courses={courses}
       />
 
-      <ArticlePostModal 
+      <ArticlePostModal
         article={selectedArticle}
         isOpen={!!selectedArticle}
         onClose={() => setSelectedArticle(null)}
@@ -825,14 +828,14 @@ export default function App() {
         onDeleteArticle={handleDeleteArticle}
       />
 
-      <AdminDashboardModal 
+      <AdminDashboardModal
         isOpen={adminDashboardModalOpen}
         onClose={() => setAdminDashboardModalOpen(false)}
         currentUser={currentUser}
         onDeleteArticle={handleDeleteArticle}
       />
 
-      <PaymentCheckoutModal 
+      <PaymentCheckoutModal
         isOpen={checkoutModalOpen}
         onClose={() => setCheckoutModalOpen(false)}
         type={checkoutData.type}
@@ -845,11 +848,19 @@ export default function App() {
         onOpenTopUp={() => setWalletModalOpen(true)}
       />
 
-      <WalletTopUpModal 
+      <WalletTopUpModal
         isOpen={walletModalOpen}
         onClose={() => setWalletModalOpen(false)}
         currentUser={currentUser}
         onWalletUpdated={(w) => setUserWallet(w)}
+      />
+
+      <TutorApplicationModal
+        isOpen={tutorApplicationModalOpen}
+        onClose={() => setTutorApplicationModalOpen(false)}
+        currentUser={currentUser}
+        onOpenAuth={handleOpenAuth}
+        onOpenAdmin={() => setAdminDashboardModalOpen(true)}
       />
     </div>
   );
