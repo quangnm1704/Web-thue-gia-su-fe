@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  X, 
-  ShieldCheck, 
-  Users, 
-  UserCheck, 
-  Briefcase, 
-  Lock, 
-  Unlock, 
-  CheckCircle2, 
-  XCircle, 
-  Loader2, 
-  RefreshCw, 
+import {
+  X,
+  ShieldCheck,
+  Users,
+  UserCheck,
+  Briefcase,
+  Lock,
+  Unlock,
+  CheckCircle2,
+  XCircle,
+  Loader2,
+  RefreshCw,
   ExternalLink,
   Search,
   FileText,
@@ -141,7 +141,7 @@ export default function AdminDashboardModal({ isOpen, onClose, currentUser, onDe
   };
 
   // Lọc theo tìm kiếm
-  const filteredUsers = users.filter(u => 
+  const filteredUsers = users.filter(u =>
     (u.displayName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
     (u.email || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
     (u.role || '').toLowerCase().includes(searchTerm.toLowerCase())
@@ -155,9 +155,9 @@ export default function AdminDashboardModal({ isOpen, onClose, currentUser, onDe
 
   return (
     <div className="ud-modal-backdrop" onClick={onClose} style={{ zIndex: 1100 }}>
-      <div 
-        className="ud-detail-modal-card animate-fade-in" 
-        style={{ maxWidth: 960, width: '95%', maxHeight: '92vh', display: 'flex', flexDirection: 'column' }} 
+      <div
+        className="ud-detail-modal-card animate-fade-in"
+        style={{ maxWidth: 960, width: '95%', maxHeight: '92vh', display: 'flex', flexDirection: 'column' }}
         onClick={(e) => e.stopPropagation()}
       >
         <button className="ud-modal-close" onClick={onClose}>
@@ -168,7 +168,7 @@ export default function AdminDashboardModal({ isOpen, onClose, currentUser, onDe
         <div className="detail-modal-hero" style={{ padding: '22px 30px', background: 'linear-gradient(135deg, #1e1e24 0%, #2b1055 100%)' }}>
           <div className="detail-hero-left">
             <span className="badge badge-bestseller" style={{ backgroundColor: '#dc2626', color: '#fff' }}>
-              <ShieldCheck size={14} style={{ display: 'inline', marginRight: 5, verticalAlign: 'middle' }} /> 
+              <ShieldCheck size={14} style={{ display: 'inline', marginRight: 5, verticalAlign: 'middle' }} />
               Cổng Quản Trị Hệ Thống (Admin Panel)
             </span>
             <h2 className="detail-title" style={{ fontSize: '1.55rem', marginTop: 8, color: '#fff' }}>
@@ -183,7 +183,7 @@ export default function AdminDashboardModal({ isOpen, onClose, currentUser, onDe
         {/* Navigation Tabs Bar */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 30px', borderBottom: '1px solid #e2e8f0', background: '#fafbfc' }}>
           <div style={{ display: 'flex', gap: 20 }}>
-            <button 
+            <button
               onClick={() => setActiveTab('users')}
               style={{
                 padding: '14px 4px',
@@ -202,7 +202,7 @@ export default function AdminDashboardModal({ isOpen, onClose, currentUser, onDe
               <Users size={16} /> Quản lý Người dùng ({users.length})
             </button>
 
-            <button 
+            <button
               onClick={() => setActiveTab('applications')}
               style={{
                 padding: '14px 4px',
@@ -221,7 +221,7 @@ export default function AdminDashboardModal({ isOpen, onClose, currentUser, onDe
               <UserCheck size={16} /> Duyệt đơn Gia sư ({applications.length})
             </button>
 
-            <button 
+            <button
               onClick={() => setActiveTab('packages')}
               style={{
                 padding: '14px 4px',
@@ -240,7 +240,7 @@ export default function AdminDashboardModal({ isOpen, onClose, currentUser, onDe
               <Briefcase size={16} /> Gói Dịch Vụ Môi Giới ({packages.length})
             </button>
 
-            <button 
+            <button
               onClick={() => setActiveTab('articles')}
               style={{
                 padding: '14px 4px',
@@ -260,7 +260,7 @@ export default function AdminDashboardModal({ isOpen, onClose, currentUser, onDe
             </button>
           </div>
 
-          <button 
+          <button
             className="btn btn-outline"
             onClick={fetchData}
             disabled={loading}
@@ -280,14 +280,14 @@ export default function AdminDashboardModal({ isOpen, onClose, currentUser, onDe
 
         {/* Tab Content Body */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '20px 30px' }}>
-          
+
           {/* TAB 1: QUẢN LÝ NGƯỜI DÙNG */}
           {activeTab === 'users' && (
             <div>
               {/* Search bar */}
               <div style={{ marginBottom: 16, position: 'relative', maxWidth: 400 }}>
                 <Search size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#64748b' }} />
-                <input 
+                <input
                   type="text"
                   placeholder="Tìm kiếm theo tên, email, vai trò..."
                   value={searchTerm}
@@ -334,24 +334,24 @@ export default function AdminDashboardModal({ isOpen, onClose, currentUser, onDe
                             </td>
                             <td style={{ padding: '12px 16px', color: '#64748b' }}>{u.email}</td>
                             <td style={{ padding: '12px 16px' }}>
-                              <span style={{ 
-                                backgroundColor: roleColor + '15', 
-                                color: roleColor, 
-                                padding: '3px 8px', 
-                                borderRadius: 100, 
-                                fontSize: '0.78rem', 
-                                fontWeight: 700 
+                              <span style={{
+                                backgroundColor: roleColor + '15',
+                                color: roleColor,
+                                padding: '3px 8px',
+                                borderRadius: 100,
+                                fontSize: '0.78rem',
+                                fontWeight: 700
                               }}>
                                 {u.role}
                               </span>
                             </td>
                             <td style={{ padding: '12px 16px' }}>
-                              <span style={{ 
-                                backgroundColor: statusColor + '15', 
-                                color: statusColor, 
-                                padding: '3px 8px', 
-                                borderRadius: 100, 
-                                fontSize: '0.78rem', 
+                              <span style={{
+                                backgroundColor: statusColor + '15',
+                                color: statusColor,
+                                padding: '3px 8px',
+                                borderRadius: 100,
+                                fontSize: '0.78rem',
                                 fontWeight: 600,
                                 display: 'inline-flex',
                                 alignItems: 'center',
@@ -412,377 +412,377 @@ export default function AdminDashboardModal({ isOpen, onClose, currentUser, onDe
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                   {applications.map((app) => (
-                    <div 
-                      key={app.id} 
-                      style={{ 
-                        border: '1px solid #e2e8f0', 
-                        borderRadius: 10, 
-                        padding: '18px 22px', 
-                        display: 'flex', 
+                    <div
+                      key={app.id}
+                      style={{
+                        border: '1px solid #e2e8f0',
+                        borderRadius: 10,
+                        padding: '18px 22px',
+                        display: 'flex',
                         flexDirection: 'column',
                         gap: 12,
                         background: '#fff',
                         boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
                       }}
                     >
-                      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 }}>
-                        <div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-                            <h4 style={{ margin: 0, fontSize: '1.05rem', color: '#0f172a', fontWeight: 700 }}>
-                              {app.userName || `Ứng viên ID: ${app.userId ? app.userId.substring(0, 8) : 'N/A'}`}
-                            </h4>
-                            {app.userEmail && (
-                              <span style={{ fontSize: '0.85rem', color: '#64748b' }}>({app.userEmail})</span>
-                            )}
-                            <span style={{ 
-                              fontSize: '0.75rem', 
-                              fontWeight: 700, 
-                              padding: '3px 10px', 
-                              borderRadius: 100,
-                              backgroundColor: app.status === 'APPROVED' ? '#dcfce7' : (app.status === 'REJECTED' ? '#fee2e2' : '#fef3c7'),
-                              color: app.status === 'APPROVED' ? '#15803d' : (app.status === 'REJECTED' ? '#b91c1c' : '#b45309')
-                            }}>
-                              {app.status === 'APPROVED' ? 'ĐÃ DUYỆT' : (app.status === 'REJECTED' ? 'ĐÃ TỪ CHỐI' : 'CHỜ DUYỆT')}
-                            </span>
-                          </div>
+                          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 }}>
+                            <div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+                                <h4 style={{ margin: 0, fontSize: '1.05rem', color: '#0f172a', fontWeight: 700 }}>
+                                  {app.userName || `Ứng viên ID: ${app.userId ? app.userId.substring(0, 8) : 'N/A'}`}
+                                </h4>
+                                {app.userEmail && (
+                                  <span style={{ fontSize: '0.85rem', color: '#64748b' }}>({app.userEmail})</span>
+                                )}
+                                <span style={{
+                                  fontSize: '0.75rem',
+                                  fontWeight: 700,
+                                  padding: '3px 10px',
+                                  borderRadius: 100,
+                                  backgroundColor: app.status === 'APPROVED' ? '#dcfce7' : (app.status === 'REJECTED' ? '#fee2e2' : '#fef3c7'),
+                                  color: app.status === 'APPROVED' ? '#15803d' : (app.status === 'REJECTED' ? '#b91c1c' : '#b45309')
+                                }}>
+                                  {app.status === 'APPROVED' ? 'ĐÃ DUYỆT' : (app.status === 'REJECTED' ? 'ĐÃ TỪ CHỐI' : 'CHỜ DUYỆT')}
+                                </span>
+                              </div>
 
-                          <div style={{ fontSize: '0.82rem', color: '#64748b', display: 'flex', gap: 16 }}>
-                            <span>Mã hồ sơ: <code>{app.id.substring(0, 8)}...</code></span>
-                            {app.createdAt && (
-                              <span>Ngày nộp: {new Date(app.createdAt).toLocaleDateString('vi-VN')}</span>
-                            )}
-                          </div>
-                        </div>
-
-                        {app.status === 'PENDING' && (
-                          <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
-                            <button
-                              onClick={() => handleApproveApplication(app.id)}
-                              disabled={processingId === app.id}
-                              style={{
-                                padding: '8px 16px',
-                                borderRadius: 6,
-                                border: 'none',
-                                backgroundColor: '#16a34a',
-                                color: '#fff',
-                                fontSize: '0.85rem',
-                                fontWeight: 700,
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 6
-                              }}
-                            >
-                              <CheckCircle size={15} /> Phê duyệt Gia sư
-                            </button>
-                            <button
-                              onClick={() => handleRejectApplication(app.id)}
-                              disabled={processingId === app.id}
-                              style={{
-                                padding: '8px 16px',
-                                borderRadius: 6,
-                                border: '1px solid #fca5a5',
-                                backgroundColor: '#fff',
-                                color: '#dc2626',
-                                fontSize: '0.85rem',
-                                fontWeight: 700,
-                                cursor: 'pointer'
-                              }}
-                            >
-                              Từ chối
-                            </button>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Details Content */}
-                      <div style={{ background: '#f8fafc', padding: '12px 16px', borderRadius: 8, fontSize: '0.88rem', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                        {app.subjectsCanTeach && (
-                          <div>
-                            <strong style={{ color: '#334155' }}>Môn đăng ký dạy: </strong>
-                            <span style={{ color: '#0f172a' }}>{app.subjectsCanTeach}</span>
-                          </div>
-                        )}
-                        {app.bio && (
-                          <div>
-                            <strong style={{ color: '#334155' }}>Giới thiệu & Kinh nghiệm: </strong>
-                            <span style={{ color: '#475569', whiteSpace: 'pre-line' }}>{app.bio}</span>
-                          </div>
-                        )}
-                        <div style={{ display: 'flex', gap: 20, marginTop: 4, flexWrap: 'wrap' }}>
-                          {app.cvUrl && (
-                            <a 
-                              href={app.cvUrl} 
-                              target="_blank" 
-                              rel="noreferrer" 
-                              style={{ color: '#a435f0', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 5 }}
-                            >
-                              <FileText size={15} /> Mở CV / Bằng cấp ứng tuyển <ExternalLink size={13} />
-                            </a>
-                          )}
-                          {app.testSubmission && (
-                            <a 
-                              href={app.testSubmission} 
-                              target="_blank" 
-                              rel="noreferrer" 
-                              style={{ color: '#2563eb', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 5 }}
-                            >
-                              <ExternalLink size={14} /> Mở Video dạy thử / Bài test <ExternalLink size={13} />
-                            </a>
-                          )}
-                        </div>
-                      </div>
-
-                      {app.adminNote && (
-                        <div style={{ fontSize: '0.82rem', color: '#b91c1c', fontStyle: 'italic', background: '#fef2f2', padding: '6px 12px', borderRadius: 4 }}>
-                          Ghi chú Admin: {app.adminNote}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* TAB 4: QUẢN LÝ BÀI VIẾT DIỄN ĐÀN */}
-          {activeTab === 'articles' && (
-            <div>
-              {loading ? (
-                <div style={{ textAlign: 'center', padding: '40px 0' }}>
-                  <Loader2 size={30} className="animate-spin" style={{ margin: '0 auto 10px', color: '#dc2626' }} />
-                  <p>Đang tải danh sách bài viết...</p>
-                </div>
-              ) : filteredArticles.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '40px 0', color: '#64748b' }}>
-                  Không tìm thấy bài viết nào phù hợp.
-                </div>
-              ) : (
-                <div style={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.88rem' }}>
-                    <thead>
-                      <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', color: '#475569' }}>
-                        <th style={{ padding: '12px 14px' }}>Tiêu đề bài viết</th>
-                        <th style={{ padding: '12px 14px' }}>Tác giả</th>
-                        <th style={{ padding: '12px 14px' }}>Thời gian đăng</th>
-                        <th style={{ padding: '12px 14px' }}>Trạng thái</th>
-                        <th style={{ padding: '12px 14px', textAlign: 'right' }}>Thao tác Admin</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredArticles.map((art) => (
-                        <tr key={art.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                          <td style={{ padding: '14px', fontWeight: 600, color: '#1e293b', maxWidth: 300 }}>
-                            <div style={{ fontSize: '0.95rem', marginBottom: 4 }}>{art.title}</div>
-                            <div style={{ fontSize: '0.8rem', color: '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 280 }}>
-                              {art.content}
+                              <div style={{ fontSize: '0.82rem', color: '#64748b', display: 'flex', gap: 16 }}>
+                                <span>Mã hồ sơ: <code>{app.id.substring(0, 8)}...</code></span>
+                                {app.createdAt && (
+                                  <span>Ngày nộp: {new Date(app.createdAt).toLocaleDateString('vi-VN')}</span>
+                                )}
+                              </div>
                             </div>
-                          </td>
-                          <td style={{ padding: '14px' }}>
-                            <span style={{ fontWeight: 600, color: '#334155' }}>
-                              {art.authorNickname || art.author?.displayName || 'Thành viên'}
-                            </span>
-                          </td>
-                          <td style={{ padding: '14px', color: '#64748b', fontSize: '0.82rem' }}>
-                            {art.createdAt ? new Date(art.createdAt).toLocaleString('vi-VN') : 'Gần đây'}
-                          </td>
-                          <td style={{ padding: '14px' }}>
-                            <span style={{ 
-                              fontSize: '0.74rem', 
-                              fontWeight: 700, 
-                              padding: '2px 8px', 
-                              borderRadius: 100,
-                              backgroundColor: art.isPublished !== false ? '#dcfce7' : '#fee2e2',
-                              color: art.isPublished !== false ? '#15803d' : '#b91c1c'
-                            }}>
-                              {art.isPublished !== false ? 'Đã xuất bản' : 'Ẩn'}
-                            </span>
-                          </td>
-                          <td style={{ padding: '14px', textAlign: 'right' }}>
-                            <button
-                              onClick={() => handleDeleteArticleAdmin(art)}
-                              disabled={processingId === art.id}
-                              style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: 6,
-                                padding: '6px 12px',
-                                borderRadius: 6,
-                                border: '1px solid #fca5a5',
-                                backgroundColor: '#fee2e2',
-                                color: '#b91c1c',
-                                fontWeight: 700,
-                                fontSize: '0.82rem',
-                                cursor: processingId === art.id ? 'not-allowed' : 'pointer'
-                              }}
-                              title="Xóa bài viết này khỏi hệ thống"
-                            >
-                              {processingId === art.id ? (
-                                <Loader2 size={14} className="animate-spin" />
-                              ) : (
-                                <Trash2 size={14} color="#b91c1c" />
+
+                              {app.status === 'PENDING' && (
+                                <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+                                  <button
+                                    onClick={() => handleApproveApplication(app.id)}
+                                    disabled={processingId === app.id}
+                                    style={{
+                                      padding: '8px 16px',
+                                      borderRadius: 6,
+                                      border: 'none',
+                                      backgroundColor: '#16a34a',
+                                      color: '#fff',
+                                      fontSize: '0.85rem',
+                                      fontWeight: 700,
+                                      cursor: 'pointer',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: 6
+                                    }}
+                                  >
+                                    <CheckCircle size={15} /> Phê duyệt Gia sư
+                                  </button>
+                                  <button
+                                    onClick={() => handleRejectApplication(app.id)}
+                                    disabled={processingId === app.id}
+                                    style={{
+                                      padding: '8px 16px',
+                                      borderRadius: 6,
+                                      border: '1px solid #fca5a5',
+                                      backgroundColor: '#fff',
+                                      color: '#dc2626',
+                                      fontSize: '0.85rem',
+                                      fontWeight: 700,
+                                      cursor: 'pointer'
+                                    }}
+                                  >
+                                    Từ chối
+                                  </button>
+                                </div>
                               )}
-                              <span>Xóa bài</span>
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                            </div>
+
+                            {/* Details Content */}
+                            <div style={{ background: '#f8fafc', padding: '12px 16px', borderRadius: 8, fontSize: '0.88rem', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                              {app.subjectsCanTeach && (
+                                <div>
+                                  <strong style={{ color: '#334155' }}>Môn đăng ký dạy: </strong>
+                                  <span style={{ color: '#0f172a' }}>{app.subjectsCanTeach}</span>
+                                </div>
+                              )}
+                              {app.bio && (
+                                <div>
+                                  <strong style={{ color: '#334155' }}>Giới thiệu & Kinh nghiệm: </strong>
+                                  <span style={{ color: '#475569', whiteSpace: 'pre-line' }}>{app.bio}</span>
+                                </div>
+                              )}
+                              <div style={{ display: 'flex', gap: 20, marginTop: 4, flexWrap: 'wrap' }}>
+                                {app.cvUrl && (
+                                    <a
+                                      href={app.cvUrl}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      style={{ color: '#a435f0', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 5 }}
+                                    >
+                                      <FileText size={15} /> Mở CV / Bằng cấp ứng tuyển <ExternalLink size={13} />
+                                    </a>
+                          )}
+                                    {app.testSubmission && (
+                                      <a
+                                        href={app.testSubmission}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        style={{ color: '#2563eb', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 5 }}
+                                      >
+                                        <ExternalLink size={14} /> Mở Video dạy thử / Bài test <ExternalLink size={13} />
+                                      </a>
+                                    )}
+                                  </div>
+                              </div>
+
+                                  {app.adminNote && (
+                                    <div style={{ fontSize: '0.82rem', color: '#b91c1c', fontStyle: 'italic', background: '#fef2f2', padding: '6px 12px', borderRadius: 4 }}>
+                                      Ghi chú Admin: {app.adminNote}
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
               )}
-            </div>
+                          </div>
           )}
 
-          {/* TAB 3: GÓI DỊCH VỤ MÔI GIỚI */}
-          {activeTab === 'packages' && (
-            <div>
-              {loading ? (
-                <div style={{ textAlign: 'center', padding: '40px 0' }}>
-                  <Loader2 size={30} className="animate-spin" style={{ margin: '0 auto 10px', color: '#a435f0' }} />
-                  <p>Đang tải danh sách gói dịch vụ...</p>
-                </div>
-              ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
-                  {packages.map((pkg) => (
-                    <div 
-                      key={pkg.id}
-                      style={{ 
-                        border: '1px solid #e2e8f0', 
-                        borderRadius: 8, 
-                        padding: 18, 
-                        background: '#fff',
-                        boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
-                      }}
-                    >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
-                        <h4 style={{ margin: 0, fontSize: '1.05rem', color: '#1e293b' }}>{pkg.name}</h4>
-                        <span style={{ 
-                          fontSize: '0.72rem', 
-                          fontWeight: 700, 
-                          padding: '2px 8px', 
-                          borderRadius: 100,
-                          backgroundColor: pkg.active ? '#dcfce7' : '#f1f5f9',
-                          color: pkg.active ? '#15803d' : '#64748b'
-                        }}>
-                          {pkg.active ? 'Đang hoạt động' : 'Tạm ngưng'}
-                        </span>
-                      </div>
-                      <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#a435f0', marginBottom: 6 }}>
-                        {formatVND(pkg.price)}
-                      </div>
-                      <div style={{ fontSize: '0.85rem', color: '#64748b' }}>
-                        Phí nền tảng trích lại: <strong>{pkg.platformFeePercent}%</strong>
+                          {/* TAB 4: QUẢN LÝ BÀI VIẾT DIỄN ĐÀN */}
+                          {activeTab === 'articles' && (
+                            <div>
+                              {loading ? (
+                                <div style={{ textAlign: 'center', padding: '40px 0' }}>
+                                  <Loader2 size={30} className="animate-spin" style={{ margin: '0 auto 10px', color: '#dc2626' }} />
+                                  <p>Đang tải danh sách bài viết...</p>
+                                </div>
+                              ) : filteredArticles.length === 0 ? (
+                                <div style={{ textAlign: 'center', padding: '40px 0', color: '#64748b' }}>
+                                  Không tìm thấy bài viết nào phù hợp.
+                                </div>
+                              ) : (
+                                <div style={{ overflowX: 'auto' }}>
+                                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.88rem' }}>
+                                    <thead>
+                                      <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', color: '#475569' }}>
+                                        <th style={{ padding: '12px 14px' }}>Tiêu đề bài viết</th>
+                                        <th style={{ padding: '12px 14px' }}>Tác giả</th>
+                                        <th style={{ padding: '12px 14px' }}>Thời gian đăng</th>
+                                        <th style={{ padding: '12px 14px' }}>Trạng thái</th>
+                                        <th style={{ padding: '12px 14px', textAlign: 'right' }}>Thao tác Admin</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {filteredArticles.map((art) => (
+                                        <tr key={art.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                                          <td style={{ padding: '14px', fontWeight: 600, color: '#1e293b', maxWidth: 300 }}>
+                                            <div style={{ fontSize: '0.95rem', marginBottom: 4 }}>{art.title}</div>
+                                            <div style={{ fontSize: '0.8rem', color: '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 280 }}>
+                                              {art.content}
+                                            </div>
+                                          </td>
+                                          <td style={{ padding: '14px' }}>
+                                            <span style={{ fontWeight: 600, color: '#334155' }}>
+                                              {art.authorNickname || art.author?.displayName || 'Thành viên'}
+                                            </span>
+                                          </td>
+                                          <td style={{ padding: '14px', color: '#64748b', fontSize: '0.82rem' }}>
+                                            {art.createdAt ? new Date(art.createdAt).toLocaleString('vi-VN') : 'Gần đây'}
+                                          </td>
+                                          <td style={{ padding: '14px' }}>
+                                            <span style={{
+                                              fontSize: '0.74rem',
+                                              fontWeight: 700,
+                                              padding: '2px 8px',
+                                              borderRadius: 100,
+                                              backgroundColor: art.isPublished !== false ? '#dcfce7' : '#fee2e2',
+                                              color: art.isPublished !== false ? '#15803d' : '#b91c1c'
+                                            }}>
+                                              {art.isPublished !== false ? 'Đã xuất bản' : 'Ẩn'}
+                                            </span>
+                                          </td>
+                                          <td style={{ padding: '14px', textAlign: 'right' }}>
+                                            <button
+                                              onClick={() => handleDeleteArticleAdmin(art)}
+                                              disabled={processingId === art.id}
+                                              style={{
+                                                display: 'inline-flex',
+                                                alignItems: 'center',
+                                                gap: 6,
+                                                padding: '6px 12px',
+                                                borderRadius: 6,
+                                                border: '1px solid #fca5a5',
+                                                backgroundColor: '#fee2e2',
+                                                color: '#b91c1c',
+                                                fontWeight: 700,
+                                                fontSize: '0.82rem',
+                                                cursor: processingId === art.id ? 'not-allowed' : 'pointer'
+                                              }}
+                                              title="Xóa bài viết này khỏi hệ thống"
+                                            >
+                                              {processingId === art.id ? (
+                                                <Loader2 size={14} className="animate-spin" />
+                                              ) : (
+                                                <Trash2 size={14} color="#b91c1c" />
+                                              )}
+                                              <span>Xóa bài</span>
+                                            </button>
+                                          </td>
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {/* TAB 3: GÓI DỊCH VỤ MÔI GIỚI */}
+                          {activeTab === 'packages' && (
+                            <div>
+                              {loading ? (
+                                <div style={{ textAlign: 'center', padding: '40px 0' }}>
+                                  <Loader2 size={30} className="animate-spin" style={{ margin: '0 auto 10px', color: '#a435f0' }} />
+                                  <p>Đang tải danh sách gói dịch vụ...</p>
+                                </div>
+                              ) : (
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
+                                  {packages.map((pkg) => (
+                                    <div
+                                      key={pkg.id}
+                                      style={{
+                                        border: '1px solid #e2e8f0',
+                                        borderRadius: 8,
+                                        padding: 18,
+                                        background: '#fff',
+                                        boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+                                      }}
+                                    >
+                                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+                                        <h4 style={{ margin: 0, fontSize: '1.05rem', color: '#1e293b' }}>{pkg.name}</h4>
+                                        <span style={{
+                                          fontSize: '0.72rem',
+                                          fontWeight: 700,
+                                          padding: '2px 8px',
+                                          borderRadius: 100,
+                                          backgroundColor: pkg.active ? '#dcfce7' : '#f1f5f9',
+                                          color: pkg.active ? '#15803d' : '#64748b'
+                                        }}>
+                                          {pkg.active ? 'Đang hoạt động' : 'Tạm ngưng'}
+                                        </span>
+                                      </div>
+                                      <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#a435f0', marginBottom: 6 }}>
+                                        {formatVND(pkg.price)}
+                                      </div>
+                                      <div style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                                        Phí nền tảng trích lại: <strong>{pkg.platformFeePercent}%</strong>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {/* TAB 4: QUẢN LÝ BÀI VIẾT DIỄN ĐÀN */}
+                          {activeTab === 'articles' && (
+                            <div>
+                              {loading ? (
+                                <div style={{ textAlign: 'center', padding: '40px 0' }}>
+                                  <Loader2 size={30} className="animate-spin" style={{ margin: '0 auto 10px', color: '#dc2626' }} />
+                                  <p>Đang tải danh sách bài viết...</p>
+                                </div>
+                              ) : filteredArticles.length === 0 ? (
+                                <div style={{ textAlign: 'center', padding: '40px 0', color: '#64748b' }}>
+                                  Không tìm thấy bài viết nào phù hợp.
+                                </div>
+                              ) : (
+                                <div style={{ overflowX: 'auto' }}>
+                                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.88rem' }}>
+                                    <thead>
+                                      <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', color: '#475569' }}>
+                                        <th style={{ padding: '12px 14px' }}>Tiêu đề bài viết</th>
+                                        <th style={{ padding: '12px 14px' }}>Tác giả</th>
+                                        <th style={{ padding: '12px 14px' }}>Thời gian đăng</th>
+                                        <th style={{ padding: '12px 14px' }}>Trạng thái</th>
+                                        <th style={{ padding: '12px 14px', textAlign: 'right' }}>Thao tác Admin</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {filteredArticles.map((art) => (
+                                        <tr key={art.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                                          <td style={{ padding: '14px', fontWeight: 600, color: '#1e293b', maxWidth: 300 }}>
+                                            <div style={{ fontSize: '0.95rem', marginBottom: 4 }}>{art.title}</div>
+                                            <div style={{ fontSize: '0.8rem', color: '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 280 }}>
+                                              {art.content}
+                                            </div>
+                                          </td>
+                                          <td style={{ padding: '14px' }}>
+                                            <span style={{ fontWeight: 600, color: '#334155' }}>
+                                              {art.authorNickname || art.author?.displayName || 'Thành viên'}
+                                            </span>
+                                          </td>
+                                          <td style={{ padding: '14px', color: '#64748b', fontSize: '0.82rem' }}>
+                                            {art.createdAt ? new Date(art.createdAt).toLocaleString('vi-VN') : 'Gần đây'}
+                                          </td>
+                                          <td style={{ padding: '14px' }}>
+                                            <span style={{
+                                              fontSize: '0.74rem',
+                                              fontWeight: 700,
+                                              padding: '2px 8px',
+                                              borderRadius: 100,
+                                              backgroundColor: art.isPublished !== false ? '#dcfce7' : '#fee2e2',
+                                              color: art.isPublished !== false ? '#15803d' : '#b91c1c'
+                                            }}>
+                                              {art.isPublished !== false ? 'Đã xuất bản' : 'Ẩn'}
+                                            </span>
+                                          </td>
+                                          <td style={{ padding: '14px', textAlign: 'right' }}>
+                                            <button
+                                              onClick={() => handleDeleteArticleAdmin(art)}
+                                              disabled={processingId === art.id}
+                                              style={{
+                                                display: 'inline-flex',
+                                                alignItems: 'center',
+                                                gap: 6,
+                                                padding: '6px 12px',
+                                                borderRadius: 6,
+                                                border: '1px solid #fca5a5',
+                                                backgroundColor: '#fee2e2',
+                                                color: '#b91c1c',
+                                                fontWeight: 700,
+                                                fontSize: '0.82rem',
+                                                cursor: processingId === art.id ? 'not-allowed' : 'pointer'
+                                              }}
+                                              title="Xóa bài viết này khỏi hệ thống"
+                                            >
+                                              {processingId === art.id ? (
+                                                <Loader2 size={14} className="animate-spin" />
+                                              ) : (
+                                                <Trash2 size={14} color="#b91c1c" />
+                                              )}
+                                              <span>Xóa bài</span>
+                                            </button>
+                                          </td>
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                        </div>
+
+                        {/* Modal Footer */}
+                        <div style={{ padding: '14px 30px', borderTop: '1px solid #e2e8f0', background: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontSize: '0.82rem', color: '#64748b' }}>
+                            Quyền quản trị cấp cao • Tài khoản: <strong>{currentUser?.displayName || currentUser?.email}</strong>
+                          </span>
+                          <button className="btn btn-outline" onClick={onClose} style={{ padding: '8px 24px', fontSize: '0.85rem' }}>
+                            Đóng
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* TAB 4: QUẢN LÝ BÀI VIẾT DIỄN ĐÀN */}
-          {activeTab === 'articles' && (
-            <div>
-              {loading ? (
-                <div style={{ textAlign: 'center', padding: '40px 0' }}>
-                  <Loader2 size={30} className="animate-spin" style={{ margin: '0 auto 10px', color: '#dc2626' }} />
-                  <p>Đang tải danh sách bài viết...</p>
-                </div>
-              ) : filteredArticles.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '40px 0', color: '#64748b' }}>
-                  Không tìm thấy bài viết nào phù hợp.
-                </div>
-              ) : (
-                <div style={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.88rem' }}>
-                    <thead>
-                      <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', color: '#475569' }}>
-                        <th style={{ padding: '12px 14px' }}>Tiêu đề bài viết</th>
-                        <th style={{ padding: '12px 14px' }}>Tác giả</th>
-                        <th style={{ padding: '12px 14px' }}>Thời gian đăng</th>
-                        <th style={{ padding: '12px 14px' }}>Trạng thái</th>
-                        <th style={{ padding: '12px 14px', textAlign: 'right' }}>Thao tác Admin</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredArticles.map((art) => (
-                        <tr key={art.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                          <td style={{ padding: '14px', fontWeight: 600, color: '#1e293b', maxWidth: 300 }}>
-                            <div style={{ fontSize: '0.95rem', marginBottom: 4 }}>{art.title}</div>
-                            <div style={{ fontSize: '0.8rem', color: '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 280 }}>
-                              {art.content}
-                            </div>
-                          </td>
-                          <td style={{ padding: '14px' }}>
-                            <span style={{ fontWeight: 600, color: '#334155' }}>
-                              {art.authorNickname || art.author?.displayName || 'Thành viên'}
-                            </span>
-                          </td>
-                          <td style={{ padding: '14px', color: '#64748b', fontSize: '0.82rem' }}>
-                            {art.createdAt ? new Date(art.createdAt).toLocaleString('vi-VN') : 'Gần đây'}
-                          </td>
-                          <td style={{ padding: '14px' }}>
-                            <span style={{ 
-                              fontSize: '0.74rem', 
-                              fontWeight: 700, 
-                              padding: '2px 8px', 
-                              borderRadius: 100,
-                              backgroundColor: art.isPublished !== false ? '#dcfce7' : '#fee2e2',
-                              color: art.isPublished !== false ? '#15803d' : '#b91c1c'
-                            }}>
-                              {art.isPublished !== false ? 'Đã xuất bản' : 'Ẩn'}
-                            </span>
-                          </td>
-                          <td style={{ padding: '14px', textAlign: 'right' }}>
-                            <button
-                              onClick={() => handleDeleteArticleAdmin(art)}
-                              disabled={processingId === art.id}
-                              style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: 6,
-                                padding: '6px 12px',
-                                borderRadius: 6,
-                                border: '1px solid #fca5a5',
-                                backgroundColor: '#fee2e2',
-                                color: '#b91c1c',
-                                fontWeight: 700,
-                                fontSize: '0.82rem',
-                                cursor: processingId === art.id ? 'not-allowed' : 'pointer'
-                              }}
-                              title="Xóa bài viết này khỏi hệ thống"
-                            >
-                              {processingId === art.id ? (
-                                <Loader2 size={14} className="animate-spin" />
-                              ) : (
-                                <Trash2 size={14} color="#b91c1c" />
-                              )}
-                              <span>Xóa bài</span>
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          )}
-
-        </div>
-
-        {/* Modal Footer */}
-        <div style={{ padding: '14px 30px', borderTop: '1px solid #e2e8f0', background: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: '0.82rem', color: '#64748b' }}>
-            Quyền quản trị cấp cao • Tài khoản: <strong>{currentUser?.displayName || currentUser?.email}</strong>
-          </span>
-          <button className="btn btn-outline" onClick={onClose} style={{ padding: '8px 24px', fontSize: '0.85rem' }}>
-            Đóng
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+                  );
 }
 

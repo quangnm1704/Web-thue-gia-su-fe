@@ -117,11 +117,11 @@ export default function TutorApplicationModal({
   };
 
   return (
-    <div className="ud-modal-overlay animate-fade-in" onClick={onClose} style={{ zIndex: 1100 }}>
+    <div className="ud-modal-backdrop" onClick={onClose} style={{ zIndex: 1200 }}>
       <div 
-        className="ud-modal-card" 
+        className="ud-detail-modal-card animate-fade-in" 
         onClick={(e) => e.stopPropagation()} 
-        style={{ maxWidth: 680, width: '92%', maxHeight: '90vh', overflowY: 'auto' }}
+        style={{ maxWidth: 680, width: '92%', maxHeight: '90vh', overflowY: 'auto', padding: 0 }}
       >
         {/* Header */}
         <div style={{
@@ -546,3 +546,4 @@ export default function TutorApplicationModal({
     </div>
   );
 }
+
