@@ -127,6 +127,24 @@ export default function ChatModal({
   if (!isOpen) return null;
 
   // Gửi tin nhắn mới
+  // Xác nhận thỏa thuận điều kiện & lịch học
+  const handleAgree = async () => {
+    if (!conversation?.id || isAgreeing) return;
+    setIsAgreeing(true);
+    try {
+      await conversationApi.agreeAsStudent(conversation.id);
+      setConversation(prev => ({ ...prev, status: 'AGREED' }));
+      await messageApi.sendMessage(conversation.id, '🤝 Học viên đã xác nhận đồng ý với thỏa thuận lịch học và điều kiện.');
+      const newMessages = await messageApi.getMessages(conversation.id);
+      setMessages(newMessages || []);
+    } catch (err) {
+      console.error('Lỗi xác nhận thỏa thuận:', err);
+      alert('Không thể xác nhận thỏa thuận: ' + (err.data?.message || err.message));
+    } finally {
+      setIsAgreeing(false);
+    }
+  };
+
   const handleSendMessage = async (textToSend) => {
     const text = textToSend || inputText;
     if (!text.trim() || !conversation?.id || sending) return;

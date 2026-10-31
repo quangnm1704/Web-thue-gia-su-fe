@@ -151,6 +151,41 @@ export default function App() {
     }
   };
 
+  // Tải số dư ví của người dùng
+  const loadUserWallet = async (user) => {
+    if (!user?.id) return;
+    try {
+      const w = await walletApi.getWalletByUserId(user.id);
+      setUserWallet(w || { availableBalance: 0, holdingBalance: 0 });
+    } catch (err) {
+      console.warn('Lỗi tải ví:', err);
+    }
+  };
+
+  // Mở Checkout Modal
+  const handleOpenCheckout = ({ type, item, enrollmentId, bookingId, amount }) => {
+    setCheckoutData({
+      type,
+      item,
+      enrollmentId,
+      bookingId,
+      amount
+    });
+    setCheckoutModalOpen(true);
+  };
+
+  // Xử lý sau khi thanh toán thành công
+  const handlePaymentSuccess = (result) => {
+    if (currentUser) {
+      loadUserWallet(currentUser);
+      loadUserNotifications(currentUser);
+    }
+    if (checkoutData.type === 'course' && checkoutData.item?.id) {
+      setEnrolledCourseIds(prev => [...prev, checkoutData.item.id]);
+      loadUserEnrollments();
+    }
+  };
+
   // Check Backend connection & load real data if online
   useEffect(() => {
     async function initData() {
@@ -171,6 +206,7 @@ export default function App() {
           await loadUserNotifications(user);
           await loadCartAndWishlist(user);
           await loadConversationsCount(user);
+          await loadUserWallet(user);
         } catch (e) {
           console.log('Chưa đăng nhập hoặc token hết hạn:', e.message);
           const token = authApi.getToken();
@@ -187,6 +223,7 @@ export default function App() {
             await loadUserNotifications(fallbackUser);
             await loadCartAndWishlist(fallbackUser);
             await loadConversationsCount(fallbackUser);
+            await loadUserWallet(fallbackUser);
           } else {
             authApi.logout();
             setCurrentUser(null);
