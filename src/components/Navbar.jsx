@@ -222,7 +222,7 @@ export default function Navbar({
           </div>
 
           {/* Search bar with Live Dropdown */}
-          <div ref={searchContainerRef} style={{ position: 'relative', flex: 1, maxWidth: 540, margin: '0 20px' }}>
+          <div ref={searchContainerRef} style={{ position: 'relative', flex: '1 1 200px', maxWidth: 440, margin: '0 12px' }}>
             <form className={`ud-search-form ${isSearchFocused ? 'focused' : ''}`} onSubmit={handleSearchSubmit} style={{ width: '100%', margin: 0 }}>
               <Search size={18} className="ud-search-icon" />
               <input
@@ -681,21 +681,26 @@ export default function Navbar({
                   )}
                 </div>
               ) : (
-                <div className="ud-auth-buttons">
+                <div className="ud-auth-btns">
                   <button
-                    className="btn btn-outline btn-sm"
+                    className="btn btn-outline"
                     onClick={() => onOpenAuth('login')}
                   >
                     Đăng nhập
                   </button>
                   <button
-                    className="btn btn-primary btn-sm"
+                    className="btn btn-dark"
                     onClick={() => onOpenAuth('register')}
                   >
                     Đăng ký
                   </button>
                 </div>
               )}
+
+              {/* Language Globe */}
+              <button className="ud-globe-btn" title="Chọn ngôn ngữ">
+                <Globe size={18} />
+              </button>
           </div>
         </div>
       </nav>
