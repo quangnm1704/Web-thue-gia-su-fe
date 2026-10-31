@@ -222,208 +222,208 @@ export default function Navbar({
           </div>
 
           {/* Search bar with Live Dropdown */}
-          <div ref={searchContainerRef} style={{ position: 'relative', flex: '1 1 200px', maxWidth: 440, margin: '0 12px' }}>
-            <form className={`ud-search-form ${isSearchFocused ? 'focused' : ''}`} onSubmit={handleSearchSubmit} style={{ width: '100%', margin: 0 }}>
-              <Search size={18} className="ud-search-icon" />
-              <input
-                type="text"
-                placeholder="Tìm kiếm môn học, khóa học, tên gia sư..."
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  setShowSearchDropdown(true);
-                  if (onSearch && e.target.value.trim().length === 0) {
-                    onSearch('');
-                  }
-                }}
-                onFocus={() => {
-                  setIsSearchFocused(true);
-                  if (searchTerm.trim()) setShowSearchDropdown(true);
-                }}
-                onBlur={() => setIsSearchFocused(false)}
-              />
-              {searchTerm && (
-                <button
-                  type="button"
-                  className="ud-search-clear"
-                  onClick={() => {
-                    setSearchTerm('');
-                    setShowSearchDropdown(false);
-                    if (onSearch) onSearch('');
+            <div ref={searchContainerRef} style={{ position: 'relative', flex: '1 1 200px', maxWidth: 440, margin: '0 12px' }}>
+              <form className={`ud-search-form ${isSearchFocused ? 'focused' : ''}`} onSubmit={handleSearchSubmit} style={{ width: '100%', margin: 0 }}>
+                <Search size={18} className="ud-search-icon" />
+                <input
+                  type="text"
+                  placeholder="Tìm kiếm môn học, khóa học, tên gia sư..."
+                  value={searchTerm}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setShowSearchDropdown(true);
+                    if (onSearch && e.target.value.trim().length === 0) {
+                      onSearch('');
+                    }
                   }}
-                >
-                  <X size={16} />
-                </button>
-              )}
-            </form>
-
-            {/* Live Search Results Dropdown */}
-            {showSearchDropdown && searchTerm.trim().length > 0 && (
-              <div
-                className="ud-search-dropdown animate-fade-in"
-                style={{
-                  position: 'absolute',
-                  top: 'calc(100% + 8px)',
-                  left: 0,
-                  right: 0,
-                  background: '#ffffff',
-                  borderRadius: 10,
-                  boxShadow: '0 12px 32px rgba(0,0,0,0.18)',
-                  border: '1px solid #e4e8eb',
-                  overflow: 'hidden',
-                  zIndex: 1000,
-                  maxHeight: 520,
-                  overflowY: 'auto'
-                }}
-              >
-                {/* Matching Courses */}
-                {matchingCourses.length > 0 && (
-                  <div style={{ padding: '10px 0 4px', borderBottom: matchingTutors.length > 0 ? '1px solid #f1f5f9' : 'none' }}>
-                    <div style={{ padding: '0 16px 8px', fontSize: '0.74rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: 0.5, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <BookOpen size={14} color="#a435f0" />
-                      <span>Khóa học phù hợp ({matchingCourses.length})</span>
-                    </div>
-                    {matchingCourses.map((c) => (
-                      <div
-                        key={c.id}
-                        onClick={() => {
-                          if (onSelectCourse) onSelectCourse(c);
-                          setShowSearchDropdown(false);
-                          setSearchTerm('');
-                        }}
-                        style={{
-                          padding: '10px 16px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 12,
-                          cursor: 'pointer',
-                          transition: 'background 0.15s ease'
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.background = '#f8fafc'}
-                        onMouseLeave={(e) => e.currentTarget.style.background = '#ffffff'}
-                      >
-                        <img
-                          src={c.thumbnail}
-                          alt={c.title}
-                          style={{ width: 48, height: 34, borderRadius: 4, objectFit: 'cover', flexShrink: 0 }}
-                        />
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#1c1d1f', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                            {c.title}
-                          </div>
-                          <div style={{ fontSize: '0.76rem', color: '#64748b' }}>
-                            Giảng viên: {c.instructor}
-                          </div>
-                        </div>
-                        <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#a435f0', flexShrink: 0 }}>
-                          {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(c.price || 0)}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Matching Tutors */}
-                {matchingTutors.length > 0 && (
-                  <div style={{ padding: '10px 0 4px' }}>
-                    <div style={{ padding: '0 16px 8px', fontSize: '0.74rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: 0.5, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <GraduationCap size={14} color="#0d6832" />
-                      <span>Gia sư 1-1 ({matchingTutors.length})</span>
-                    </div>
-                    {matchingTutors.map((t) => (
-                      <div
-                        key={t.id}
-                        onClick={() => {
-                          if (onSelectTutor) onSelectTutor(t);
-                          setShowSearchDropdown(false);
-                          setSearchTerm('');
-                        }}
-                        style={{
-                          padding: '10px 16px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 12,
-                          cursor: 'pointer',
-                          transition: 'background 0.15s ease'
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.background = '#f8fafc'}
-                        onMouseLeave={(e) => e.currentTarget.style.background = '#ffffff'}
-                      >
-                        <img
-                          src={t.avatar}
-                          alt={t.name}
-                          style={{ width: 38, height: 38, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '2px solid #a435f0' }}
-                        />
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#1c1d1f' }}>
-                            {t.name}
-                          </div>
-                          <div style={{ fontSize: '0.76rem', color: '#64748b' }}>
-                            {t.title} • {t.degree}
-                          </div>
-                        </div>
-                        <div style={{ fontSize: '0.8rem', color: '#b4690e', fontWeight: 700, flexShrink: 0 }}>
-                          ★ {t.rating}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Empty State */}
-                {matchingCourses.length === 0 && matchingTutors.length === 0 && (
-                  <div style={{ padding: '28px 16px', textAlign: 'center', color: '#64748b' }}>
-                    <Search size={32} color="#94a3b8" style={{ margin: '0 auto 8px', opacity: 0.7 }} />
-                    <p style={{ margin: 0, fontSize: '0.92rem', fontWeight: 600, color: '#1e293b' }}>
-                      Không tìm thấy kết quả nào cho "{searchTerm}"
-                    </p>
-                    <span style={{ fontSize: '0.78rem', color: '#94a3b8', marginTop: 4, display: 'block' }}>
-                      Thử tìm theo môn như "Toán", "Lý", "Java", "IELTS" hoặc tên gia sư
-                    </span>
-                  </div>
-                )}
-
-                {/* Footer CTA */}
-                {(matchingCourses.length > 0 || matchingTutors.length > 0) && (
-                  <div
+                  onFocus={() => {
+                    setIsSearchFocused(true);
+                    if (searchTerm.trim()) setShowSearchDropdown(true);
+                  }}
+                  onBlur={() => setIsSearchFocused(false)}
+                />
+                {searchTerm && (
+                  <button
+                    type="button"
+                    className="ud-search-clear"
                     onClick={() => {
-                      if (onSearch) onSearch(searchTerm);
+                      setSearchTerm('');
                       setShowSearchDropdown(false);
-                    }}
-                    style={{
-                      padding: '12px 16px',
-                      background: '#f8fafc',
-                      borderTop: '1px solid #f1f5f9',
-                      textAlign: 'center',
-                      fontSize: '0.85rem',
-                      fontWeight: 600,
-                      color: '#2563eb',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: 6
+                      if (onSearch) onSearch('');
                     }}
                   >
-                    <span>Lọc và xem tất cả kết quả cho "{searchTerm}"</span>
-                    <ArrowRight size={14} />
-                  </div>
+                    <X size={16} />
+                  </button>
                 )}
-              </div>
-            )}
-          </div>
+              </form>
 
-          {/* Navigation Links */}
-          <div className="ud-nav-actions">
-            <a href="#tutors" className="ud-nav-link hide-mobile">
-              Gia sư 1-1
-            </a>
-            <a href="#courses" className="ud-nav-link hide-mobile">
-              Khóa học
-            </a>
-            <a href="#articles" className="ud-nav-link hide-mobile">
-              Diễn đàn
-            </a>
+              {/* Live Search Results Dropdown */}
+              {showSearchDropdown && searchTerm.trim().length > 0 && (
+                <div
+                  className="ud-search-dropdown animate-fade-in"
+                  style={{
+                    position: 'absolute',
+                    top: 'calc(100% + 8px)',
+                    left: 0,
+                    right: 0,
+                    background: '#ffffff',
+                    borderRadius: 10,
+                    boxShadow: '0 12px 32px rgba(0,0,0,0.18)',
+                    border: '1px solid #e4e8eb',
+                    overflow: 'hidden',
+                    zIndex: 1000,
+                    maxHeight: 520,
+                    overflowY: 'auto'
+                  }}
+                >
+                  {/* Matching Courses */}
+                  {matchingCourses.length > 0 && (
+                    <div style={{ padding: '10px 0 4px', borderBottom: matchingTutors.length > 0 ? '1px solid #f1f5f9' : 'none' }}>
+                      <div style={{ padding: '0 16px 8px', fontSize: '0.74rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: 0.5, display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <BookOpen size={14} color="#a435f0" />
+                        <span>Khóa học phù hợp ({matchingCourses.length})</span>
+                      </div>
+                      {matchingCourses.map((c) => (
+                        <div
+                          key={c.id}
+                          onClick={() => {
+                            if (onSelectCourse) onSelectCourse(c);
+                            setShowSearchDropdown(false);
+                            setSearchTerm('');
+                          }}
+                          style={{
+                            padding: '10px 16px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 12,
+                            cursor: 'pointer',
+                            transition: 'background 0.15s ease'
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.background = '#f8fafc'}
+                          onMouseLeave={(e) => e.currentTarget.style.background = '#ffffff'}
+                        >
+                          <img
+                            src={c.thumbnail}
+                            alt={c.title}
+                            style={{ width: 48, height: 34, borderRadius: 4, objectFit: 'cover', flexShrink: 0 }}
+                          />
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#1c1d1f', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              {c.title}
+                            </div>
+                            <div style={{ fontSize: '0.76rem', color: '#64748b' }}>
+                              Giảng viên: {c.instructor}
+                            </div>
+                          </div>
+                          <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#a435f0', flexShrink: 0 }}>
+                            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(c.price || 0)}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Matching Tutors */}
+                  {matchingTutors.length > 0 && (
+                    <div style={{ padding: '10px 0 4px' }}>
+                      <div style={{ padding: '0 16px 8px', fontSize: '0.74rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: 0.5, display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <GraduationCap size={14} color="#0d6832" />
+                        <span>Gia sư 1-1 ({matchingTutors.length})</span>
+                      </div>
+                      {matchingTutors.map((t) => (
+                        <div
+                          key={t.id}
+                          onClick={() => {
+                            if (onSelectTutor) onSelectTutor(t);
+                            setShowSearchDropdown(false);
+                            setSearchTerm('');
+                          }}
+                          style={{
+                            padding: '10px 16px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 12,
+                            cursor: 'pointer',
+                            transition: 'background 0.15s ease'
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.background = '#f8fafc'}
+                          onMouseLeave={(e) => e.currentTarget.style.background = '#ffffff'}
+                        >
+                          <img
+                            src={t.avatar}
+                            alt={t.name}
+                            style={{ width: 38, height: 38, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '2px solid #a435f0' }}
+                          />
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#1c1d1f' }}>
+                              {t.name}
+                            </div>
+                            <div style={{ fontSize: '0.76rem', color: '#64748b' }}>
+                              {t.title} • {t.degree}
+                            </div>
+                          </div>
+                          <div style={{ fontSize: '0.8rem', color: '#b4690e', fontWeight: 700, flexShrink: 0 }}>
+                            ★ {t.rating}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Empty State */}
+                  {matchingCourses.length === 0 && matchingTutors.length === 0 && (
+                    <div style={{ padding: '28px 16px', textAlign: 'center', color: '#64748b' }}>
+                      <Search size={32} color="#94a3b8" style={{ margin: '0 auto 8px', opacity: 0.7 }} />
+                      <p style={{ margin: 0, fontSize: '0.92rem', fontWeight: 600, color: '#1e293b' }}>
+                        Không tìm thấy kết quả nào cho "{searchTerm}"
+                      </p>
+                      <span style={{ fontSize: '0.78rem', color: '#94a3b8', marginTop: 4, display: 'block' }}>
+                        Thử tìm theo môn như "Toán", "Lý", "Java", "IELTS" hoặc tên gia sư
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Footer CTA */}
+                  {(matchingCourses.length > 0 || matchingTutors.length > 0) && (
+                    <div
+                      onClick={() => {
+                        if (onSearch) onSearch(searchTerm);
+                        setShowSearchDropdown(false);
+                      }}
+                      style={{
+                        padding: '12px 16px',
+                        background: '#f8fafc',
+                        borderTop: '1px solid #f1f5f9',
+                        textAlign: 'center',
+                        fontSize: '0.85rem',
+                        fontWeight: 600,
+                        color: '#2563eb',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 6
+                      }}
+                    >
+                      <span>Lọc và xem tất cả kết quả cho "{searchTerm}"</span>
+                      <ArrowRight size={14} />
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Navigation Links */}
+            <div className="ud-nav-actions">
+              <a href="#tutors" className="ud-nav-link hide-mobile">
+                Gia sư 1-1
+              </a>
+              <a href="#courses" className="ud-nav-link hide-mobile">
+                Khóa học
+              </a>
+              <a href="#articles" className="ud-nav-link hide-mobile">
+                Diễn đàn
+              </a>
               <a
                 href="#become-tutor"
                 className="ud-nav-link ud-tutor-cta hide-mobile"
@@ -681,29 +681,29 @@ export default function Navbar({
                   )}
                 </div>
               ) : (
-                <div className="ud-auth-btns">
-                  <button
-                    className="btn btn-outline"
-                    onClick={() => onOpenAuth('login')}
-                  >
-                    Đăng nhập
-                  </button>
-                  <button
-                    className="btn btn-dark"
-                    onClick={() => onOpenAuth('register')}
-                  >
-                    Đăng ký
-                  </button>
-                </div>
+                  <div className="ud-auth-btns">
+                    <button
+                      className="btn btn-outline"
+                      onClick={() => onOpenAuth('login')}
+                    >
+                      Đăng nhập
+                    </button>
+                    <button
+                      className="btn btn-dark"
+                      onClick={() => onOpenAuth('register')}
+                    >
+                      Đăng ký
+                    </button>
+                  </div>
               )}
 
-              {/* Language Globe */}
-              <button className="ud-globe-btn" title="Chọn ngôn ngữ">
-                <Globe size={18} />
-              </button>
-          </div>
+                  {/* Language Globe */}
+                  <button className="ud-globe-btn" title="Chọn ngôn ngữ">
+                    <Globe size={18} />
+                  </button>
+                </div>
         </div>
-      </nav>
-    </header>
-  );
+          </nav>
+        </header>
+        );
 }

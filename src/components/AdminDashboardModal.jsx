@@ -7,6 +7,7 @@ import {
   Briefcase,
   Lock,
   Unlock,
+  CheckCircle,
   CheckCircle2,
   XCircle,
   Loader2,
