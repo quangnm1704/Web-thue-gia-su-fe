@@ -80,6 +80,17 @@ export default function App() {
   const [wishlistModalOpen, setWishlistModalOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
   const [wishlistItems, setWishlistItems] = useState([]);
+  const [searchKeyword, setSearchKeyword] = useState('');
+
+  // Xử lý tìm kiếm môn học, khóa học, gia sư
+  const handleSearch = (keyword) => {
+    setSearchKeyword(keyword || '');
+    if (keyword) {
+      setTimeout(() => {
+        document.getElementById('courses')?.scrollIntoView({ behavior: 'smooth' });
+      }, 50);
+    }
+  };
 
   // Lấy số lượng cuộc trò chuyện Messenger từ CSDL
   const loadConversationsCount = async (user) => {
@@ -587,6 +598,11 @@ export default function App() {
           }
         }}
         onOpenAdmin={() => setAdminDashboardModalOpen(true)}
+        courses={courses}
+        tutors={topTutors}
+        onSearch={handleSearch}
+        onSelectCourse={(course) => setSelectedCourse(course)}
+        onSelectTutor={(tutor) => handleBookTutor(tutor)}
       />
 
       <main>
@@ -598,6 +614,7 @@ export default function App() {
           onFindTutor={() => {
             document.getElementById('tutors')?.scrollIntoView({ behavior: 'smooth' });
           }}
+          onSearchTag={handleSearch}
         />
 
         {/* 3. Value Props (Why choose EduTutor) */}
@@ -610,6 +627,8 @@ export default function App() {
           onAddToCart={handleAddToCart}
           wishlist={wishlistCourseIds}
           onToggleWishlist={handleToggleWishlist}
+          searchKeyword={searchKeyword}
+          onClearSearch={() => setSearchKeyword('')}
         />
 
         {/* 5. Featured 1-on-1 Tutors Section */}
