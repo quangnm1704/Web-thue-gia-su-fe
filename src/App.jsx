@@ -39,6 +39,21 @@ import { formatCourseFromBackend } from './utils/courseAdapter';
 import { GraduationCap, ArrowRight, Wifi, WifiOff } from 'lucide-react';
 import './App.css';
 
+function removeVietnameseTones(str) {
+  if (!str) return '';
+  str = String(str).toLowerCase();
+  str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, 'a');
+  str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, 'e');
+  str = str.replace(/ì|í|ị|ỉ|ĩ/g, 'i');
+  str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, 'o');
+  str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, 'u');
+  str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, 'y');
+  str = str.replace(/đ/g, 'd');
+  str = str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g, '');
+  str = str.replace(/\u02C6|\u0306|\u031B/g, '');
+  return str.trim();
+}
+
 export default function App() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState('login');
@@ -87,10 +102,32 @@ export default function App() {
     setSearchKeyword(keyword || '');
     if (keyword) {
       setTimeout(() => {
-        document.getElementById('courses')?.scrollIntoView({ behavior: 'smooth' });
+        const clean = removeVietnameseTones(keyword);
+        const hasTutorMatch = topTutors.some(t => 
+          removeVietnameseTones(t.name).includes(clean)
+        );
+        const hasCourseMatch = courses.some(c => 
+          removeVietnameseTones(c.title).includes(clean)
+        );
+        if (hasTutorMatch && !hasCourseMatch) {
+          document.getElementById('tutors')?.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          document.getElementById('courses')?.scrollIntoView({ behavior: 'smooth' });
+        }
       }, 50);
     }
   };
+
+  // Lọc danh sách gia sư hiển thị theo từ khóa tìm kiếm (nếu có)
+  const cleanSearchTerm = removeVietnameseTones(searchKeyword);
+  const displayedTutors = cleanSearchTerm
+    ? topTutors.filter(t => 
+        removeVietnameseTones(t.name).includes(cleanSearchTerm) ||
+        removeVietnameseTones(t.title).includes(cleanSearchTerm) ||
+        removeVietnameseTones(t.degree).includes(cleanSearchTerm) ||
+        (t.subjects && t.subjects.some(s => removeVietnameseTones(s).includes(cleanSearchTerm)))
+      )
+    : topTutors;
 
   // Lấy số lượng cuộc trò chuyện Messenger từ CSDL
   const loadConversationsCount = async (user) => {
@@ -650,14 +687,20 @@ export default function App() {
             </div>
 
             <div className="ud-tutors-grid">
-              {topTutors.map((tutor) => (
-                <TutorCard 
-                  key={tutor.id} 
-                  tutor={tutor}
-                  onBookTutor={handleBookTutor}
-                  onChatTutor={handleChatTutor}
-                />
-              ))}
+              {displayedTutors.length > 0 ? (
+                displayedTutors.map((tutor) => (
+                  <TutorCard 
+                    key={tutor.id} 
+                    tutor={tutor}
+                    onBookTutor={handleBookTutor}
+                    onChatTutor={handleChatTutor}
+                  />
+                ))
+              ) : (
+                <div style={{ gridColumn: '1 / -1', padding: '30px', textAlign: 'center', background: '#f8fafc', borderRadius: 8, color: '#64748b' }}>
+                  <p style={{ margin: 0, fontWeight: 600 }}>Không tìm thấy gia sư nào phù hợp với từ khóa "{searchKeyword}"</p>
+                </div>
+              )}
             </div>
           </div>
         </section>
