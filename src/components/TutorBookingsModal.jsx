@@ -77,6 +77,11 @@ export default function TutorBookingsModal({
 
   const isTutor = currentUser?.role === 'TUTOR';
   const totalRevenue = bookings.reduce((sum, b) => sum + (b.totalPrice || 0), 0);
+  const totalPlatformFee = bookings.reduce((sum, b) => sum + (b.platformFee || 0), 0);
+  const totalTutorIncome = bookings.reduce((sum, b) => {
+    const inc = b.tutorIncome != null ? b.tutorIncome : Math.max(0, (b.totalPrice || 0) - (b.platformFee || 0));
+    return sum + inc;
+  }, 0);
 
   // Hủy đơn đặt lịch (Cancel booking)
   const handleCancelBooking = async (bookingId) => {
@@ -176,7 +181,7 @@ export default function TutorBookingsModal({
           )}
 
           {/* KPI Summary Cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 24 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isTutor ? 'repeat(auto-fit, minmax(180px, 1fr))' : 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 24 }}>
             <div style={{ background: '#f7f9fa', border: '1px solid #e4e8eb', borderRadius: 8, padding: '14px 18px' }}>
               <span style={{ fontSize: '0.82rem', color: '#6a6f73', fontWeight: 600 }}>TỔNG SỐ ĐƠN KẾT NỐI</span>
               <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#1c1d1f', marginTop: 4 }}>
@@ -185,7 +190,7 @@ export default function TutorBookingsModal({
             </div>
 
             <div style={{ background: '#f7f9fa', border: '1px solid #e4e8eb', borderRadius: 8, padding: '14px 18px' }}>
-              <span style={{ fontSize: '0.82rem', color: '#6a6f73', fontWeight: 600 }}>CHỜ THANH TOÁN PHÍ MÔI GIỚI</span>
+              <span style={{ fontSize: '0.82rem', color: '#6a6f73', fontWeight: 600 }}>CHỜ THANH TOÁN PHÍ</span>
               <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#b4690e', marginTop: 4 }}>
                 {bookings.filter(b => b.status === 'PENDING_PAYMENT').length}
               </div>
@@ -193,12 +198,34 @@ export default function TutorBookingsModal({
 
             <div style={{ background: '#f7f9fa', border: '1px solid #e4e8eb', borderRadius: 8, padding: '14px 18px' }}>
               <span style={{ fontSize: '0.82rem', color: '#6a6f73', fontWeight: 600 }}>
-                {isTutor ? 'TỔNG PHÍ DỊCH VỤ' : 'TỔNG PHÍ MÔI GIỚI'}
+                {isTutor ? 'TỔNG GIÁ GÓI (TOTAL PRICE)' : 'TỔNG PHÍ MÔI GIỚI'}
               </span>
-              <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0d6832', marginTop: 4 }}>
+              <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0f172a', marginTop: 4 }}>
                 {formatVND(totalRevenue)}
               </div>
             </div>
+
+            {isTutor && (
+              <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 8, padding: '14px 18px' }}>
+                <span style={{ fontSize: '0.82rem', color: '#166534', fontWeight: 700 }}>
+                  💰 THỰC NHẬN GIA SƯ (TUTOR_INCOME)
+                </span>
+                <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#15803d', marginTop: 4 }}>
+                  {formatVND(totalTutorIncome)}
+                </div>
+              </div>
+            )}
+
+            {isTutor && (
+              <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 8, padding: '14px 18px' }}>
+                <span style={{ fontSize: '0.82rem', color: '#92400e', fontWeight: 700 }}>
+                  🏛️ PHÍ SÀN (PLATFORM_FEE)
+                </span>
+                <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#b45309', marginTop: 4 }}>
+                  {formatVND(totalPlatformFee)}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* List of bookings */}
@@ -305,11 +332,25 @@ export default function TutorBookingsModal({
 
                       <div>
                         <span style={{ fontSize: '0.8rem', color: '#6a6f73', display: 'block', marginBottom: 2 }}>
-                          Phí dịch vụ môi giới:
+                          {isTutor ? 'Chi tiết tài chính (Theo Database):' : 'Phí dịch vụ môi giới:'}
                         </span>
-                        <strong style={{ fontSize: '1.15rem', color: '#a435f0', fontFamily: 'Outfit, sans-serif' }}>
-                          {formatVND(booking.totalPrice)}
-                        </strong>
+                        {isTutor ? (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                            <span style={{ fontSize: '0.86rem', color: '#334155' }}>
+                              Tổng giá (total_price): <strong>{formatVND(booking.totalPrice)}</strong>
+                            </span>
+                            <span style={{ fontSize: '0.8rem', color: '#b45309' }}>
+                              Phí sàn (platform_fee): -{formatVND(booking.platformFee)}
+                            </span>
+                            <strong style={{ fontSize: '0.98rem', color: '#15803d', fontFamily: 'Outfit, sans-serif' }}>
+                              Thực nhận (tutor_income): {formatVND(booking.tutorIncome != null ? booking.tutorIncome : Math.max(0, (booking.totalPrice || 0) - (booking.platformFee || 0)))}
+                            </strong>
+                          </div>
+                        ) : (
+                          <strong style={{ fontSize: '1.15rem', color: '#a435f0', fontFamily: 'Outfit, sans-serif' }}>
+                            {formatVND(booking.totalPrice)}
+                          </strong>
+                        )}
                       </div>
                     </div>
 
