@@ -404,8 +404,8 @@ export default function TutorBookingsModal({
                           </button>
                         )}
 
-                        {/* Nút Khiếu nại */}
-                        {!isTutor && booking.status !== 'CANCELLED' && (
+                        {/* Nút Khiếu nại (Cả Học viên & Gia sư đều có quyền khiếu nại đối với đơn đã thanh toán) */}
+                        {!isPendingPayment && booking.status !== 'CANCELLED' && (
                           <button
                             type="button"
                             className="btn btn-outline"
@@ -425,7 +425,7 @@ export default function TutorBookingsModal({
                               setDisputeEvidence('');
                               setDisputeModalOpen(true);
                             }}
-                            title="Gửi khiếu nại nếu thông tin liên hệ gia sư không chính xác hoặc gia sư từ chối nhận dạy"
+                            title={isTutor ? "Gửi khiếu nại nếu học viên vi phạm quy chế hoặc không phản hồi" : "Gửi khiếu nại nếu thông tin liên hệ gia sư không chính xác hoặc từ chối nhận dạy"}
                           >
                             <Scale size={14} /> Khiếu nại
                           </button>
@@ -488,7 +488,7 @@ export default function TutorBookingsModal({
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <Scale size={22} color="#dc2626" />
                 <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>
-                  Gửi Khiếu Nại Dịch Vụ Môi Giới
+                  {isTutor ? 'Gửi Khiếu Nại Đơn Kết Nối (Gia sư)' : 'Gửi Khiếu Nại Dịch Vụ Môi Giới'}
                 </h3>
               </div>
               <button
@@ -501,13 +501,15 @@ export default function TutorBookingsModal({
             </div>
 
             <p style={{ margin: '0 0 16px', fontSize: '0.86rem', color: '#64748b', lineHeight: 1.5 }}>
-              Nếu thông tin liên hệ gia sư không chính xác, gia sư từ chối nhận dạy hoặc vi phạm cam kết, bạn hãy gửi khiếu nại để Ban quản trị đối chiếu và hỗ trợ đổi gia sư hoặc hoàn phí môi giới.
+              {isTutor
+                ? 'Nếu học viên không phản hồi, cung cấp thông tin sai lệch hoặc vi phạm thỏa thuận, bạn hãy gửi khiếu nại để Ban quản trị đối chiếu và xử lý bảo vệ quyền lợi.'
+                : 'Nếu thông tin liên hệ gia sư không chính xác, gia sư từ chối nhận dạy hoặc vi phạm cam kết, bạn hãy gửi khiếu nại để Ban quản trị đối chiếu và hỗ trợ đổi gia sư hoặc hoàn phí môi giới.'}
             </p>
 
             <div style={{ marginBottom: 12, background: '#f8fafc', padding: '10px 14px', borderRadius: 6, border: '1px solid #e2e8f0' }}>
               <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Đơn kết nối: <strong style={{ color: '#0f172a' }}>#{selectedBookingForDispute.id?.substring(0, 8)}...</strong></div>
               <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: 2 }}>
-                Gia sư: <strong>{selectedBookingForDispute.tutorName || 'Gia sư chuyên môn'}</strong> • Phí môi giới: <strong style={{ color: '#b45309' }}>{formatVND(selectedBookingForDispute.totalPrice)}</strong>
+                {isTutor ? 'Học viên:' : 'Gia sư:'} <strong>{isTutor ? (selectedBookingForDispute.studentName || 'Học viên #' + selectedBookingForDispute.studentId?.substring(0, 6)) : (selectedBookingForDispute.tutorName || 'Gia sư chuyên môn')}</strong> • Phí dịch vụ: <strong style={{ color: '#b45309' }}>{formatVND(selectedBookingForDispute.totalPrice)}</strong>
               </div>
             </div>
 
@@ -520,7 +522,9 @@ export default function TutorBookingsModal({
                 required
                 value={disputeReason}
                 onChange={(e) => setDisputeReason(e.target.value)}
-                placeholder="Ví dụ: Đã gọi điện và nhắn tin Zalo cho gia sư theo số được mở khóa nhưng không liên lạc được..."
+                placeholder={isTutor
+                  ? "Ví dụ: Đã chủ động gọi điện và nhắn tin cho học viên nhiều lần nhưng không nhận được phản hồi, hoặc học viên yêu cầu dạy nội dung sai lệch thỏa thuận ban đầu..."
+                  : "Ví dụ: Đã gọi điện và nhắn tin Zalo cho gia sư theo số được mở khóa nhưng không liên lạc được..."}
                 style={{
                   width: '100%',
                   padding: '9px 12px',
