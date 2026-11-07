@@ -40,7 +40,7 @@ import {
   parseJwtPayload
 } from './services/api';
 import { formatCourseFromBackend } from './utils/courseAdapter';
-import { GraduationCap, ArrowRight, Wifi, WifiOff, ShieldCheck } from 'lucide-react';
+import { GraduationCap, ArrowRight, Wifi, WifiOff, ShieldCheck, PlusCircle } from 'lucide-react';
 import './App.css';
 
 function removeVietnameseTones(str) {
@@ -85,6 +85,7 @@ export default function App() {
 
   const [tutorApplicationModalOpen, setTutorApplicationModalOpen] = useState(false);
   const [tutorProfileModalOpen, setTutorProfileModalOpen] = useState(false);
+  const [tutorProfileInitialTab, setTutorProfileInitialTab] = useState('profile');
   const [notificationCount, setNotificationCount] = useState(0);
 
   // Wallet & Payment Checkout State
@@ -264,6 +265,17 @@ export default function App() {
       loadConversationsCount(user),
       loadUserWallet(user)
     ]);
+  };
+
+  const fetchCourses = async () => {
+    try {
+      const data = await courseApi.getCourses();
+      if (Array.isArray(data) && data.length > 0) {
+        setCourses(data.map((c, i) => formatCourseFromBackend(c, i)));
+      }
+    } catch (e) {
+      console.warn('Lỗi cập nhật danh sách khóa học:', e);
+    }
   };
 
   // Check Backend connection & load real data if online
@@ -766,7 +778,10 @@ export default function App() {
         onSelectCourse={(course) => setSelectedCourse(course)}
         onSelectTutor={(tutor) => handleBookTutor(tutor)}
         onOpenTutorApplication={() => setTutorApplicationModalOpen(true)}
-        onOpenTutorProfile={() => setTutorProfileModalOpen(true)}
+        onOpenTutorProfile={(tab) => {
+          setTutorProfileInitialTab(tab || 'create-class');
+          setTutorProfileModalOpen(true);
+        }}
       />
 
       <main>
@@ -793,6 +808,11 @@ export default function App() {
           onToggleWishlist={handleToggleWishlist}
           searchKeyword={searchKeyword}
           onClearSearch={() => setSearchKeyword('')}
+          currentUser={currentUser}
+          onOpenCreateCourse={() => {
+            setTutorProfileInitialTab('create-class');
+            setTutorProfileModalOpen(true);
+          }}
         />
 
         {/* 5. Featured 1-on-1 Tutors Section */}
@@ -808,9 +828,38 @@ export default function App() {
                   Đội ngũ thủ khoa, thạc sĩ và chuyên gia sư phạm hàng đầu đã được xác thực hồ sơ và bằng cấp nghiêm ngặt.
                 </p>
               </div>
-              <button className="ud-view-all-btn">
-                Xem tất cả gia sư <ArrowRight size={16} />
-              </button>
+              <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                {currentUser?.role === 'TUTOR' && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTutorProfileInitialTab('profile');
+                      setTutorProfileModalOpen(true);
+                    }}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      background: 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)',
+                      color: '#fff',
+                      padding: '8px 16px',
+                      borderRadius: 6,
+                      fontWeight: 700,
+                      fontSize: '0.85rem',
+                      border: 'none',
+                      cursor: 'pointer',
+                      boxShadow: '0 2px 6px rgba(124, 58, 237, 0.25)'
+                    }}
+                    title="Cập nhật môn nhận dạy và lịch rảnh dạy kèm 1-1"
+                  >
+                    <PlusCircle size={16} />
+                    <span>Đăng môn & Lịch rảnh</span>
+                  </button>
+                )}
+                <button className="ud-view-all-btn">
+                  Xem tất cả gia sư <ArrowRight size={16} />
+                </button>
+              </div>
             </div>
 
             <div className="ud-tutors-grid">
@@ -996,6 +1045,8 @@ export default function App() {
         isOpen={tutorProfileModalOpen}
         onClose={() => setTutorProfileModalOpen(false)}
         currentUser={currentUser}
+        initialTab={tutorProfileInitialTab}
+        onCourseCreated={fetchCourses}
       />
     </div>
   );

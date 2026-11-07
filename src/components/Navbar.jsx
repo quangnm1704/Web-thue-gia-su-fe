@@ -16,7 +16,10 @@ import {
   MessageCircle,
   ShieldCheck,
   Wallet,
-  ArrowRight
+  ArrowRight,
+  Calendar,
+  PlusCircle,
+  BookPlus
 } from 'lucide-react';
 import { categories } from '../data/mockData';
 
@@ -425,16 +428,43 @@ export default function Navbar({
               <a href="#articles" className="ud-nav-link hide-mobile">
                 Diễn đàn
               </a>
-              <a
-                href="#become-tutor"
-                className="ud-nav-link ud-tutor-cta hide-mobile"
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (onOpenTutorApplication) onOpenTutorApplication();
-                }}
-              >
-                Trở thành Gia sư
-              </a>
+              {currentUser?.role === 'TUTOR' ? (
+                <button
+                  type="button"
+                  className="ud-nav-link hide-mobile"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    background: 'linear-gradient(135deg, #a435f0 0%, #7928ca 100%)',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: 6,
+                    padding: '7px 14px',
+                    fontSize: '0.85rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 8px rgba(164, 53, 240, 0.3)',
+                    transition: 'all 0.2s'
+                  }}
+                  onClick={() => onOpenTutorProfile && onOpenTutorProfile('create-class')}
+                  title="Đăng ký thêm lớp dạy / khóa học mới hoặc cập nhật lịch rảnh"
+                >
+                  <PlusCircle size={16} />
+                  <span>+ Đăng ký lớp / Môn dạy</span>
+                </button>
+              ) : (
+                <a
+                  href="#become-tutor"
+                  className="ud-nav-link ud-tutor-cta hide-mobile"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (onOpenTutorApplication) onOpenTutorApplication();
+                  }}
+                >
+                  Trở thành Gia sư
+                </a>
+              )}
 
               {/* Icon buttons */}
               <div className="ud-icon-buttons">
@@ -691,11 +721,20 @@ export default function Navbar({
                         <>
                           <button
                             className="menu-item"
-                            onClick={() => { setShowUserMenu(false); if (onOpenTutorProfile) onOpenTutorProfile(); }}
+                            onClick={() => { setShowUserMenu(false); if (onOpenTutorProfile) onOpenTutorProfile('create-class'); }}
                             style={{ width: '100%', textAlign: 'left', background: '#fdf4ff', border: '1px solid #f0abfc', borderRadius: 4, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', marginBottom: 6 }}
                           >
-                            <Calendar size={16} color="#c026d3" />
-                            <span style={{ fontWeight: 600, color: '#86198f' }}>📋 Đăng môn & Lịch rảnh</span>
+                            <PlusCircle size={16} color="#c026d3" />
+                            <span style={{ fontWeight: 700, color: '#86198f' }}>🎓 Đăng ký thêm lớp dạy / Khóa học</span>
+                          </button>
+
+                          <button
+                            className="menu-item"
+                            onClick={() => { setShowUserMenu(false); if (onOpenTutorProfile) onOpenTutorProfile('profile'); }}
+                            style={{ width: '100%', textAlign: 'left', background: '#faf5ff', border: '1px solid #e9d5ff', borderRadius: 4, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', marginBottom: 6 }}
+                          >
+                            <Calendar size={16} color="#7c3aed" />
+                            <span style={{ fontWeight: 600, color: '#6b21a8' }}>📋 Đăng môn nhận dạy & Lịch rảnh</span>
                           </button>
 
                           <button

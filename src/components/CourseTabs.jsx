@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import CourseCard from './CourseCard';
 import { featuredCourses } from '../data/mockData';
-import { Sparkles, Search, X, BookOpen } from 'lucide-react';
+import { Sparkles, Search, X, BookOpen, PlusCircle } from 'lucide-react';
 
 function removeVietnameseTones(str) {
   if (!str) return '';
@@ -25,7 +25,9 @@ export default function CourseTabs({
   wishlist, 
   onToggleWishlist,
   searchKeyword = '',
-  onClearSearch = null
+  onClearSearch = null,
+  currentUser = null,
+  onOpenCreateCourse = null
 }) {
   const [activeTab, setActiveTab] = useState('all');
 
@@ -58,7 +60,7 @@ export default function CourseTabs({
   return (
     <section className="ud-courses-section" id="courses">
       <div className="container">
-        <div className="ud-section-header">
+        <div className="ud-section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
           <div className="ud-header-left">
             <span className="ud-section-tag">
               <Sparkles size={14} /> Khóa học & Buổi kèm chọn lọc
@@ -68,6 +70,32 @@ export default function CourseTabs({
               Được học viên đánh giá cao về tính thực tiễn, hỗ trợ giải đáp trực tiếp 1-1 từ giảng viên.
             </p>
           </div>
+          {currentUser?.role === 'TUTOR' && (
+            <button
+              type="button"
+              onClick={onOpenCreateCourse}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                background: 'linear-gradient(135deg, #a435f0 0%, #7928ca 100%)',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: 6,
+                padding: '10px 18px',
+                fontSize: '0.88rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+                boxShadow: '0 2px 8px rgba(164, 53, 240, 0.25)',
+                transition: 'all 0.2s',
+                marginTop: 8
+              }}
+              title="Mở thêm lớp học / khóa học mới"
+            >
+              <PlusCircle size={17} />
+              <span>+ Mở lớp học mới</span>
+            </button>
+          )}
         </div>
 
         {/* Search Filter Active Notice */}

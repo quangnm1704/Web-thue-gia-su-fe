@@ -164,9 +164,25 @@ export const articleApi = {
 
 /* ==================== 3. COURSES & ENROLLMENT ==================== */
 export const courseApi = {
+  // POST /courses (Gia sư tạo khóa học / lớp học mới)
+  createCourse: async (data) => {
+    return await request('/courses', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
   // GET /courses
   getCourses: async () => {
     return await request('/courses');
+  },
+
+  // POST /courses (Gia sư tạo khóa học / lớp học mới)
+  createCourse: async (data) => {
+    return await request('/courses', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
   },
 
   // GET /courses/:id
