@@ -1,5 +1,5 @@
-﻿import React from 'react';
-import { Star, CheckCircle, Calendar, MessageCircle, Award, Users } from 'lucide-react';
+import React from 'react';
+import { Star, CheckCircle, Calendar, MessageCircle, Award, Users, Clock } from 'lucide-react';
 
 export default function TutorCard({ tutor, onBookTutor, onChatTutor }) {
   const formatVND = (amount) => {
@@ -48,6 +48,13 @@ export default function TutorCard({ tutor, onBookTutor, onChatTutor }) {
             <span key={i} className="subject-pill">{sub}</span>
           ))}
         </div>
+
+        {tutor.availableSchedule && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.8rem', color: '#166534', background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '6px 10px', borderRadius: 6, marginTop: 10 }}>
+            <Clock size={14} color="#16a34a" style={{ flexShrink: 0 }} />
+            <span><strong>Lịch rảnh:</strong> {tutor.availableSchedule}</span>
+          </div>
+        )}
       </div>
 
       <div className="ud-tutor-footer">

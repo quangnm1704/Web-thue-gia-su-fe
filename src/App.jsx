@@ -24,6 +24,7 @@ import AdminPortal from './components/AdminPortal';
 import PaymentCheckoutModal from './components/PaymentCheckoutModal';
 import WalletTopUpModal from './components/WalletTopUpModal';
 import TutorApplicationModal from './components/TutorApplicationModal';
+import TutorProfileModal from './components/TutorProfileModal';
 import { topTutors, featuredCourses, communityArticles } from './data/mockData';
 import {
   authApi,
@@ -83,6 +84,7 @@ export default function App() {
   }, []);
 
   const [tutorApplicationModalOpen, setTutorApplicationModalOpen] = useState(false);
+  const [tutorProfileModalOpen, setTutorProfileModalOpen] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
 
   // Wallet & Payment Checkout State
@@ -764,6 +766,7 @@ export default function App() {
         onSelectCourse={(course) => setSelectedCourse(course)}
         onSelectTutor={(tutor) => handleBookTutor(tutor)}
         onOpenTutorApplication={() => setTutorApplicationModalOpen(true)}
+        onOpenTutorProfile={() => setTutorProfileModalOpen(true)}
       />
 
       <main>
@@ -987,6 +990,12 @@ export default function App() {
           setIsAdminView(true);
           window.location.hash = 'admin';
         }}
+      />
+
+      <TutorProfileModal
+        isOpen={tutorProfileModalOpen}
+        onClose={() => setTutorProfileModalOpen(false)}
+        currentUser={currentUser}
       />
     </div>
   );

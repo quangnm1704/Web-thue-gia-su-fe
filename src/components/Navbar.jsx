@@ -55,7 +55,8 @@ export default function Navbar({
   tutors = [],
   onSelectCourse = null,
   onSelectTutor = null,
-  onOpenTutorApplication = null
+  onOpenTutorApplication = null,
+  onOpenTutorProfile = null
 }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [showCategories, setShowCategories] = useState(false);
@@ -687,21 +688,32 @@ export default function Navbar({
                       </a>
 
                       {currentUser.role === 'TUTOR' ? (
-                        <button
-                          className="menu-item"
-                          onClick={() => { setShowUserMenu(false); if (onOpenBookings) onOpenBookings(); }}
-                          style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                            <GraduationCap size={16} color="#a435f0" />
-                            <span>Yêu cầu học viên đặt lịch</span>
-                          </div>
-                          {notificationCount > 0 && (
-                            <span style={{ background: '#a435f0', color: '#fff', fontSize: '0.75rem', padding: '2px 7px', borderRadius: 10, fontWeight: 700 }}>
-                              {notificationCount} mới
-                            </span>
-                          )}
-                        </button>
+                        <>
+                          <button
+                            className="menu-item"
+                            onClick={() => { setShowUserMenu(false); if (onOpenTutorProfile) onOpenTutorProfile(); }}
+                            style={{ width: '100%', textAlign: 'left', background: '#fdf4ff', border: '1px solid #f0abfc', borderRadius: 4, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', marginBottom: 6 }}
+                          >
+                            <Calendar size={16} color="#c026d3" />
+                            <span style={{ fontWeight: 600, color: '#86198f' }}>📋 Đăng môn & Lịch rảnh</span>
+                          </button>
+
+                          <button
+                            className="menu-item"
+                            onClick={() => { setShowUserMenu(false); if (onOpenBookings) onOpenBookings(); }}
+                            style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                              <GraduationCap size={16} color="#a435f0" />
+                              <span>Yêu cầu học viên đặt lịch</span>
+                            </div>
+                            {notificationCount > 0 && (
+                              <span style={{ background: '#a435f0', color: '#fff', fontSize: '0.75rem', padding: '2px 7px', borderRadius: 10, fontWeight: 700 }}>
+                                {notificationCount} mới
+                              </span>
+                            )}
+                          </button>
+                        </>
                       ) : currentUser.role === 'STUDENT' ? (
                         <button
                           className="menu-item"

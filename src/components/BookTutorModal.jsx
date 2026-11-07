@@ -196,6 +196,26 @@ export default function BookTutorModal({
                 <p className="author-role-sub">⭐ {tutor.rating} ({tutor.reviews || 120} đánh giá) • {tutor.students || 200} học sinh</p>
               </div>
             </div>
+
+            {/* Môn dạy & Lịch rảnh */}
+            <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {tutor.subjects && tutor.subjects.length > 0 && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '0.8rem', color: '#cbd5e1' }}>Môn nhận dạy:</span>
+                  {tutor.subjects.map((sub, i) => (
+                    <span key={i} style={{ background: 'rgba(255,255,255,0.15)', color: '#fff', padding: '2px 8px', borderRadius: 4, fontSize: '0.78rem', fontWeight: 600 }}>
+                      {sub}
+                    </span>
+                  ))}
+                </div>
+              )}
+              {tutor.availableSchedule && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.82rem', color: '#86efac' }}>
+                  <Clock size={14} color="#86efac" />
+                  <span><strong>Lịch rảnh:</strong> {tutor.availableSchedule}</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 

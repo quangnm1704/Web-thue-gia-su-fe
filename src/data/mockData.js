@@ -175,6 +175,7 @@ export const topTutors = [
     students: 310,
     hourlyRate: 250000,
     subjects: ['Toán 10-12', 'Toán Nâng Cao', 'Ôn Thi Đại Học'],
+    availableSchedule: 'Tối T2, T4, T6 (19:30 - 21:30) & Sáng Chủ Nhật (08:30 - 11:30)',
     isVerified: true,
     bio: 'Phương pháp giảng dạy trực quan, kiên nhẫn bồi dưỡng học sinh mất gốc thành học sinh khá giỏi. Đã giúp hơn 120 học sinh đỗ trường chuyên và điểm 9+.'
   },
@@ -190,6 +191,7 @@ export const topTutors = [
     students: 450,
     hourlyRate: 350000,
     subjects: ['IELTS Speaking', 'Tiếng Anh Doanh Nghiệp', 'Phát Âm Chuẩn Anh - Mỹ'],
+    availableSchedule: 'Tối T3, T5, T7 (19:00 - 21:00) & Chiều Thứ 7 (14:00 - 17:00)',
     isVerified: true,
     bio: 'Chuyên gia chỉnh sửa ngữ điệu và phát âm, tạo môi trường phản xạ tự nhiên 100% bằng tiếng Anh giúp học viên tự tin sau 12 buổi học.'
   },
@@ -205,6 +207,7 @@ export const topTutors = [
     students: 180,
     hourlyRate: 280000,
     subjects: ['Python cơ bản - nâng cao', 'C++ giải thuật', 'Web Frontend'],
+    availableSchedule: 'Tối T2, T4, T6 (20:00 - 22:00) & Cả ngày Chủ Nhật',
     isVerified: true,
     bio: 'Dạy học theo phương pháp Project-based Learning (học qua dự án thực tế), cam kết học viên tự tay code được sản phẩm chạy thực tế.'
   },
@@ -220,6 +223,7 @@ export const topTutors = [
     students: 260,
     hourlyRate: 220000,
     subjects: ['Hóa Học 10-12', 'Bồi dưỡng HSG', 'Ôn Thi THPT Quốc Gia'],
+    availableSchedule: 'Sáng T2 đến T6 (08:30 - 11:30) & Tối Thứ 7 (19:30 - 21:30)',
     isVerified: true,
     bio: 'Hệ thống hóa toàn bộ công thức và phương pháp bảo toàn khối lượng, bảo toàn electron bằng sơ đồ tư duy sinh động, dễ nhớ.'
   }

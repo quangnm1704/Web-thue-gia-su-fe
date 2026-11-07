@@ -594,3 +594,24 @@ export const disputeApi = {
     });
   },
 };
+
+/* ==================== 16. TUTOR PROFILE API ==================== */
+export const tutorProfileApi = {
+  // GET /tutor-profiles (Hồ sơ của chính gia sư hiện tại)
+  getMyProfile: async () => {
+    return await request('/tutor-profiles');
+  },
+
+  // GET /tutor-profiles/:userId (Xem hồ sơ công khai của 1 gia sư)
+  getTutorProfile: async (userId) => {
+    return await request(`/tutor-profiles/${userId}`);
+  },
+
+  // PATCH /tutor-profiles (Cập nhật môn dạy & lịch rảnh của gia sư)
+  updateMyProfile: async (data) => {
+    return await request('/tutor-profiles', {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  },
+};
