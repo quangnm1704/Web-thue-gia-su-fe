@@ -58,7 +58,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onLo
         }
         setTimeout(() => {
           onClose();
-        }, 800);
+        }, 150);
       } else {
         // Đăng ký qua BE: POST /users
         if (password.length < 8) {

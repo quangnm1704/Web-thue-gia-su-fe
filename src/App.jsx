@@ -171,7 +171,7 @@ export default function App() {
     }
   };
 
-  // Lấy giỏ hàng & danh sách yêu thích từ CSDL
+  // Lấy giỏ hàng & danh sách yêu thích từ CSDL đồng thời
   const loadCartAndWishlist = async (user) => {
     if (!user) {
       setCartItems([]);
@@ -179,16 +179,18 @@ export default function App() {
       return;
     }
     try {
-      const cart = await cartApi.getCart();
-      if (cart && Array.isArray(cart)) setCartItems(cart);
+      const [cartRes, wishRes] = await Promise.allSettled([
+        cartApi.getCart(),
+        wishlistApi.getWishlist()
+      ]);
+      if (cartRes.status === 'fulfilled' && Array.isArray(cartRes.value)) {
+        setCartItems(cartRes.value);
+      }
+      if (wishRes.status === 'fulfilled' && Array.isArray(wishRes.value)) {
+        setWishlistItems(wishRes.value);
+      }
     } catch (e) {
-      console.warn('Lỗi tải giỏ hàng:', e.message);
-    }
-    try {
-      const wish = await wishlistApi.getWishlist();
-      if (wish && Array.isArray(wish)) setWishlistItems(wish);
-    } catch (e) {
-      console.warn('Lỗi tải danh sách yêu thích:', e.message);
+      console.warn('Lỗi tải giỏ hàng / yêu thích:', e.message);
     }
   };
 
@@ -250,14 +252,40 @@ export default function App() {
     }
   };
 
+  // Tải đồng thời tất cả dữ liệu người dùng (Parallel Background Fetching - không giật lag UI)
+  const loadAllUserData = (user) => {
+    if (!user) return;
+    Promise.allSettled([
+      loadUserEnrollments(),
+      loadUserNotifications(user),
+      loadCartAndWishlist(user),
+      loadConversationsCount(user),
+      loadUserWallet(user)
+    ]);
+  };
+
   // Check Backend connection & load real data if online
   useEffect(() => {
     async function initData() {
-      // 1. Kiểm tra trạng thái Backend
-      const online = await checkBackendHealth();
+      // 1. Chạy song song: Tải Articles và Courses đồng thời
+      const [articlesRes, coursesRes] = await Promise.allSettled([
+        articleApi.getArticles(),
+        courseApi.getCourses()
+      ]);
+
+      const online = articlesRes.status === 'fulfilled' || coursesRes.status === 'fulfilled';
       setIsBackendOnline(online);
 
-      // 2. Nếu có token cũ, tự động lấy thông tin người dùng: GET /users
+      if (articlesRes.status === 'fulfilled' && Array.isArray(articlesRes.value) && articlesRes.value.length > 0) {
+        setArticles(articlesRes.value);
+      }
+
+      if (coursesRes.status === 'fulfilled' && Array.isArray(coursesRes.value) && coursesRes.value.length > 0) {
+        const formatted = coursesRes.value.map((c, i) => formatCourseFromBackend(c, i));
+        setCourses(formatted);
+      }
+
+      // 2. Nếu có token cũ, tự động lấy thông tin người dùng
       if (authApi.isAuthenticated()) {
         try {
           const user = await authApi.getMyInfo();
@@ -266,11 +294,7 @@ export default function App() {
             user.role = tokenRole;
           }
           setCurrentUser(user);
-          await loadUserEnrollments();
-          await loadUserNotifications(user);
-          await loadCartAndWishlist(user);
-          await loadConversationsCount(user);
-          await loadUserWallet(user);
+          loadAllUserData(user);
         } catch (e) {
           console.log('Chưa đăng nhập hoặc token hết hạn:', e.message);
           const token = authApi.getToken();
@@ -283,11 +307,7 @@ export default function App() {
               role: tokenRole || 'STUDENT'
             };
             setCurrentUser(fallbackUser);
-            await loadUserEnrollments();
-            await loadUserNotifications(fallbackUser);
-            await loadCartAndWishlist(fallbackUser);
-            await loadConversationsCount(fallbackUser);
-            await loadUserWallet(fallbackUser);
+            loadAllUserData(fallbackUser);
           } else {
             authApi.logout();
             setCurrentUser(null);
@@ -295,29 +315,6 @@ export default function App() {
         }
       } else {
         setCurrentUser(null);
-      }
-
-      // 3. Nếu Backend online, lấy bài viết thật từ GET /articles
-      if (online) {
-        try {
-          const realArticles = await articleApi.getArticles();
-          if (realArticles && realArticles.length > 0) {
-            setArticles(realArticles);
-          }
-        } catch (err) {
-          console.warn('Lỗi lấy articles từ BE:', err);
-        }
-
-        // Lấy danh sách khóa học thật từ GET /courses
-        try {
-          const realCourses = await courseApi.getCourses();
-          if (realCourses && realCourses.length > 0) {
-            const formatted = realCourses.map((c, i) => formatCourseFromBackend(c, i));
-            setCourses(formatted);
-          }
-        } catch (err) {
-          console.warn('Lỗi lấy courses từ BE:', err);
-        }
       }
     }
 
@@ -330,16 +327,14 @@ export default function App() {
     setAuthModalOpen(true);
   };
 
-  const handleLoginSuccess = async (user) => {
+  const handleLoginSuccess = (user) => {
     setCurrentUser(user);
     if (user?.role === 'ADMIN') {
       window.location.hash = '#admin';
       setIsAdminView(true);
     }
-    await loadUserEnrollments();
-    await loadUserNotifications(user);
-    await loadCartAndWishlist(user);
-    await loadConversationsCount(user);
+    // Chạy song song không chặn UI
+    loadAllUserData(user);
   };
 
   const handleLogout = () => {
@@ -405,25 +400,36 @@ export default function App() {
       handleOpenAuth('login');
       return;
     }
-    const isWishlisted = wishlistItems.some(w => w.courseId === courseId);
+    const isWishlisted = wishlistItems.some(w => (w.courseId || w.id) === courseId);
+    // Optimistic UI: Đổi trạng thái tim ngay lập tức (không chờ mạng)
+    if (isWishlisted) {
+      setWishlistItems(prev => prev.filter(w => (w.courseId || w.id) !== courseId));
+    } else {
+      setWishlistItems(prev => [...prev, { courseId, id: courseId }]);
+    }
+
     try {
       if (isWishlisted) {
         await wishlistApi.removeFromWishlist(courseId);
       } else {
         await wishlistApi.addToWishlist(courseId);
       }
-      await loadCartAndWishlist(currentUser);
     } catch (err) {
-      console.error('Lỗi cập nhật danh sách yêu thích:', err);
+      console.warn('Lỗi cập nhật danh sách yêu thích:', err);
+      const wish = await wishlistApi.getWishlist();
+      if (wish && Array.isArray(wish)) setWishlistItems(wish);
     }
   };
 
   const handleRemoveFromWishlist = async (courseId) => {
+    // Optimistic UI: Xóa khỏi danh sách ngay lập tức
+    setWishlistItems(prev => prev.filter(w => (w.courseId || w.id) !== courseId));
     try {
       await wishlistApi.removeFromWishlist(courseId);
-      await loadCartAndWishlist(currentUser);
     } catch (err) {
       console.error('Lỗi xóa khỏi danh sách yêu thích:', err);
+      const wish = await wishlistApi.getWishlist();
+      if (wish && Array.isArray(wish)) setWishlistItems(wish);
     }
   };
 
