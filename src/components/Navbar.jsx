@@ -233,7 +233,7 @@ export default function Navbar({
           </div>
 
           {/* Search bar with Live Dropdown */}
-            <div ref={searchContainerRef} style={{ position: 'relative', flex: '1 1 200px', maxWidth: 440, margin: '0 12px' }}>
+          <div ref={searchContainerRef} style={{ position: 'relative', flex: '1 1 180px', maxWidth: 380, minWidth: 140, margin: '0 8px' }}>
               <form className={`ud-search-form ${isSearchFocused ? 'focused' : ''}`} onSubmit={handleSearchSubmit} style={{ width: '100%', margin: 0 }}>
                 <Search size={18} className="ud-search-icon" />
                 <input
@@ -426,44 +426,29 @@ export default function Navbar({
 
             {/* Navigation Links */}
             <div className="ud-nav-actions">
-              <a href="#tutors" className="ud-nav-link hide-mobile">
+              <a href="#tutors" className="ud-nav-link hide-tablet">
                 Gia sư 1-1
               </a>
-              <a href="#courses" className="ud-nav-link hide-mobile">
+              <a href="#courses" className="ud-nav-link hide-tablet">
                 Khóa học
               </a>
-              <a href="#articles" className="ud-nav-link hide-mobile">
+              <a href="#articles" className="ud-nav-link hide-tablet">
                 Diễn đàn
               </a>
               {currentUser?.role === 'TUTOR' ? (
                 <button
                   type="button"
-                  className="ud-nav-link hide-mobile"
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    background: 'linear-gradient(135deg, #a435f0 0%, #7928ca 100%)',
-                    color: '#ffffff',
-                    border: 'none',
-                    borderRadius: 6,
-                    padding: '7px 14px',
-                    fontSize: '0.85rem',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    boxShadow: '0 2px 8px rgba(164, 53, 240, 0.3)',
-                    transition: 'all 0.2s'
-                  }}
+                  className="ud-nav-tutor-btn hide-tablet"
                   onClick={() => onOpenTutorProfile && onOpenTutorProfile('create-class')}
-                  title="Đăng ký thêm lớp dạy / khóa học mới hoặc cập nhật lịch rảnh"
+                  title="Đăng ký thêm lớp dạy hoặc khóa học mới"
                 >
-                  <PlusCircle size={16} />
-                  <span>+ Đăng ký lớp / Môn dạy</span>
+                  <PlusCircle size={15} />
+                  <span>+ Đăng ký dạy</span>
                 </button>
               ) : (
                 <a
                   href="#become-tutor"
-                  className="ud-nav-link ud-tutor-cta hide-mobile"
+                  className="ud-nav-link ud-tutor-cta hide-tablet"
                   onClick={(e) => {
                     e.preventDefault();
                     if (onOpenTutorApplication) onOpenTutorApplication();
@@ -478,24 +463,10 @@ export default function Navbar({
                 {currentUser && (
                   <button
                     className="ud-wallet-btn"
-                    title={`Ví EduTutor - Số dư: ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(userWallet?.availableBalance || 0)} (Bấm để nạp/xem chi tiết)`}
+                    title={`Ví EduTutor - Số dư: ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(userWallet?.availableBalance || 0)}`}
                     onClick={onOpenWallet}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 6,
-                      padding: '5px 12px',
-                      borderRadius: 20,
-                      background: '#eff6ff',
-                      border: '1px solid #bfdbfe',
-                      color: '#1d4ed8',
-                      fontSize: '0.84rem',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      marginRight: 6
-                    }}
                   >
-                    <Wallet size={16} color="#2563eb" />
+                    <Wallet size={15} color="#2563eb" />
                     <span>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(userWallet?.availableBalance || 0)}</span>
                   </button>
                 )}
@@ -507,7 +478,7 @@ export default function Navbar({
                     else if (!currentUser && onOpenAuth) onOpenAuth('login');
                   }}
                 >
-                  <Heart size={20} fill={wishlistCount > 0 ? '#db2777' : 'none'} color={wishlistCount > 0 ? '#db2777' : 'currentColor'} />
+                  <Heart size={19} fill={wishlistCount > 0 ? '#db2777' : 'none'} color={wishlistCount > 0 ? '#db2777' : 'currentColor'} />
                   {wishlistCount > 0 && <span className="ud-badge-count" style={{ background: '#db2777' }}>{wishlistCount}</span>}
                 </button>
 
@@ -519,7 +490,7 @@ export default function Navbar({
                     else if (!currentUser && onOpenAuth) onOpenAuth('login');
                   }}
                 >
-                  <ShoppingCart size={20} color={cartCount > 0 ? '#a435f0' : 'currentColor'} />
+                  <ShoppingCart size={19} color={cartCount > 0 ? '#a435f0' : 'currentColor'} />
                   {cartCount > 0 && <span className="ud-badge-count">{cartCount}</span>}
                 </button>
 
@@ -531,9 +502,8 @@ export default function Navbar({
                     if (onOpenConversations) onOpenConversations();
                     else if (!currentUser && onOpenAuth) onOpenAuth('login');
                   }}
-                  style={{ position: 'relative' }}
                 >
-                  <MessageCircle size={20} color={conversationCount > 0 ? '#a435f0' : 'currentColor'} />
+                  <MessageCircle size={19} color={conversationCount > 0 ? '#a435f0' : 'currentColor'} />
                   {conversationCount > 0 && (
                     <span
                       className="ud-badge-count"
@@ -551,9 +521,8 @@ export default function Navbar({
                     if (onOpenBookings) onOpenBookings();
                     else if (!currentUser && onOpenAuth) onOpenAuth('login');
                   }}
-                  style={{ position: 'relative' }}
                 >
-                  <Bell size={20} color={notificationCount > 0 ? '#a435f0' : 'currentColor'} />
+                  <Bell size={19} color={notificationCount > 0 ? '#a435f0' : 'currentColor'} />
                   {notificationCount > 0 && (
                     <span
                       className="ud-badge-count"
@@ -565,54 +534,17 @@ export default function Navbar({
                 </button>
               </div>
 
-              {/* Admin Quick Switch Portal Button */}
-              {currentUser?.role === 'ADMIN' ? (
+              {/* Admin Quick Switch Portal Button - Only visible for ADMIN */}
+              {currentUser?.role === 'ADMIN' && (
                 <button
                   onClick={() => {
                     if (onOpenAdmin) onOpenAdmin();
                   }}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    background: '#fee2e2',
-                    color: '#b91c1c',
-                    border: '1px solid #fca5a5',
-                    borderRadius: 6,
-                    padding: '7px 12px',
-                    fontSize: '0.82rem',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    transition: 'all 0.2s'
-                  }}
+                  className="ud-nav-admin-btn"
                   title="Chuyển sang Giao diện Quản trị viên (Admin Portal)"
                 >
-                  <ShieldCheck size={16} />
-                  <span className="hide-mobile">Trang Quản Trị</span>
-                </button>
-              ) : (
-                <button
-                  onClick={() => {
-                    if (onOpenAdmin) onOpenAdmin();
-                  }}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 5,
-                    background: '#f8fafc',
-                    color: '#475569',
-                    border: '1px solid #cbd5e1',
-                    borderRadius: 6,
-                    padding: '6px 10px',
-                    fontSize: '0.78rem',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    transition: 'all 0.2s'
-                  }}
-                  title="Mở Bảng điều khiển Quản trị viên (Admin Portal)"
-                >
-                  <ShieldCheck size={14} color="#64748b" />
-                  <span className="hide-mobile">Admin</span>
+                  <ShieldCheck size={15} />
+                  <span className="hide-tablet">Quản Trị</span>
                 </button>
               )}
 
@@ -640,7 +572,7 @@ export default function Navbar({
                     >
                       {currentUser.role === 'ADMIN' ? 'A' : (currentUser.displayName ? currentUser.displayName.charAt(0).toUpperCase() : 'U')}
                     </div>
-                    <div className="user-nav-details hide-mobile">
+                    <div className="user-nav-details hide-laptop">
                       <span className="user-nav-name">{currentUser.displayName || currentUser.username}</span>
                       <span
                         className="user-nav-role"
@@ -649,10 +581,10 @@ export default function Navbar({
                           fontWeight: 700
                         }}
                       >
-                        {currentUser.role === 'ADMIN' ? 'Quản trị viên' : (currentUser.role === 'TUTOR' ? 'Gia sư' : 'Học viên')}
+                        {currentUser.role === 'ADMIN' ? 'Admin' : (currentUser.role === 'TUTOR' ? 'Gia sư' : 'Học viên')}
                       </span>
                     </div>
-                    <ChevronDown size={14} />
+                    <ChevronDown size={14} color="#64748b" />
                   </button>
 
                   {showUserMenu && (
@@ -661,207 +593,210 @@ export default function Navbar({
                       onMouseEnter={handleUserMenuEnter}
                       onMouseLeave={handleUserMenuLeave}
                     >
+                      {/* User identity card */}
                       <div className="menu-header">
-                        <strong>{currentUser.displayName || currentUser.username}</strong>
-                        <span className="menu-email">{currentUser.email || currentUser.username}</span>
-                        <span
-                          style={{
-                            marginTop: 6,
-                            display: 'inline-block',
-                            fontSize: '0.74rem',
-                            fontWeight: 700,
-                            padding: '3px 8px',
-                            borderRadius: 4,
-                            backgroundColor: currentUser.role === 'ADMIN'
-                              ? '#fee2e2'
-                              : (currentUser.role === 'TUTOR' ? '#f3e8ff' : '#eff6ff'),
-                            color: currentUser.role === 'ADMIN'
-                              ? '#b91c1c'
-                              : (currentUser.role === 'TUTOR' ? '#7e22ce' : '#1d4ed8'),
-                            border: currentUser.role === 'ADMIN'
-                              ? '1px solid #fca5a5'
-                              : (currentUser.role === 'TUTOR' ? '1px solid #d8b4fe' : '1px solid #bfdbfe')
-                          }}
-                        >
-                          Vai trò: {currentUser.role === 'ADMIN' ? 'Quản trị viên hệ thống (Admin)' : (currentUser.role === 'TUTOR' ? 'Gia sư chuyên nghiệp' : 'Học viên')}
-                        </span>
-                      </div>
-                      <div className="menu-divider"></div>
-                      <button
-                        className="menu-item"
-                        onClick={() => { setShowUserMenu(false); if (onOpenWallet) onOpenWallet(); }}
-                        style={{ width: '100%', textAlign: 'left', background: '#eff6ff', border: '1px solid #dbeafe', borderRadius: 4, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', marginBottom: 6 }}
-                      >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <Wallet size={16} color="#2563eb" />
-                          <span style={{ fontWeight: 600, color: '#1d4ed8' }}>Ví tiền EduTutor</span>
+                        <div className="menu-user-title">{currentUser.displayName || currentUser.username}</div>
+                        <div className="menu-email">{currentUser.email || currentUser.username}</div>
+                        <div className="menu-role-badge">
+                          {currentUser.role === 'ADMIN' && <span className="badge-admin">Quản trị viên</span>}
+                          {currentUser.role === 'TUTOR' && <span className="badge-tutor">Gia sư chuyên nghiệp</span>}
+                          {currentUser.role === 'STUDENT' && <span className="badge-student">Học viên</span>}
                         </div>
-                        <strong style={{ color: '#1d4ed8', fontSize: '0.85rem' }}>
+                      </div>
+
+                      {/* Wallet Balance Card */}
+                      <div
+                        className="menu-wallet-card"
+                        onClick={() => { setShowUserMenu(false); if (onOpenWallet) onOpenWallet(); }}
+                        title="Bấm để xem chi tiết ví và nạp tiền"
+                      >
+                        <div className="menu-wallet-left">
+                          <Wallet size={16} color="#2563eb" />
+                          <span>Ví tiền EduTutor</span>
+                        </div>
+                        <strong className="menu-wallet-balance">
                           {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(userWallet?.availableBalance || 0)}
                         </strong>
-                      </button>
+                      </div>
 
-                      {/* Admin Dashboard Entry */}
+                      <div className="menu-divider"></div>
+
+                      {/* Admin Portal Entry */}
                       {currentUser.role === 'ADMIN' && (
                         <>
                           <button
-                            className="menu-item"
+                            className="menu-item menu-item-admin"
                             onClick={() => { setShowUserMenu(false); if (onOpenAdmin) onOpenAdmin(); }}
-                            style={{ width: '100%', textAlign: 'left', background: '#fef2f2', border: '1px solid #fee2e2', borderRadius: 4, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, color: '#dc2626', fontWeight: 700, marginBottom: 4 }}
                           >
-                            <ShieldCheck size={16} color="#dc2626" />
-                            <span>Bảng điều khiển Quản trị</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                              <ShieldCheck size={16} />
+                              <span>Bảng điều khiển Quản trị</span>
+                            </div>
                           </button>
                           <div className="menu-divider"></div>
                         </>
                       )}
 
-                      <a
-                        href="#courses"
-                        className="menu-item"
-                        onClick={() => setShowUserMenu(false)}
-                      >
-                        <BookOpen size={16} /> Danh sách khóa học
-                      </a>
+                      {/* Tutor Tools */}
+                      {currentUser.role === 'TUTOR' && (
+                        <div className="menu-section">
+                          <div className="menu-section-label">Quản lý giảng dạy</div>
 
-                      {/* Quản lý hồ sơ cá nhân (CN02.01) */}
-                      <button
-                        className="menu-item"
-                        onClick={() => { setShowUserMenu(false); if (onOpenProfile) onOpenProfile(); }}
-                        style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px' }}
-                      >
-                        <User size={16} color="#475569" />
-                        <span>👤 Hồ sơ cá nhân (CN02.01)</span>
-                      </button>
-
-                      {/* Quản lý thông tin ngân hàng (CN02.02) */}
-                      <button
-                        className="menu-item"
-                        onClick={() => { setShowUserMenu(false); if (onOpenBankAccounts) onOpenBankAccounts(); }}
-                        style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px' }}
-                      >
-                        <CreditCard size={16} color="#059669" />
-                        <span>💳 Thông tin ngân hàng (CN02.02)</span>
-                      </button>
-
-                      {/* Dịch vụ đã đăng ký của tôi (CN02.14) */}
-                      <button
-                        className="menu-item"
-                        onClick={() => { setShowUserMenu(false); if (onOpenMyServices) onOpenMyServices(); }}
-                        style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px' }}
-                      >
-                        <GraduationCap size={16} color="#2563eb" />
-                        <span>📋 Dịch vụ đã đăng ký (CN02.14)</span>
-                      </button>
-
-                      {currentUser.role === 'TUTOR' ? (
-                        <>
-                          {/* Theo dõi thu nhập gia sư (CN04.03) */}
                           <button
-                            className="menu-item"
-                            onClick={() => { setShowUserMenu(false); if (onOpenTutorIncome) onOpenTutorIncome(); }}
-                            style={{ width: '100%', textAlign: 'left', background: '#ecfdf5', border: '1px solid #a7f3d0', borderRadius: 4, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', marginBottom: 6 }}
-                          >
-                            <DollarSign size={16} color="#059669" />
-                            <span style={{ fontWeight: 700, color: '#047857' }}>📊 Thống kê thu nhập (CN04.03)</span>
-                          </button>
-
-                          {/* Quản lý bài học và video của gia sư (CN04.02) */}
-                          <button
-                            className="menu-item"
-                            onClick={() => { setShowUserMenu(false); if (onOpenLessonEditor) onOpenLessonEditor(); }}
-                            style={{ width: '100%', textAlign: 'left', background: '#f5f3ff', border: '1px solid #ddd6fe', borderRadius: 4, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', marginBottom: 6 }}
-                          >
-                            <BookOpen size={16} color="#7c3aed" />
-                            <span style={{ fontWeight: 700, color: '#6b21a8' }}>📚 Quản lý bài học & video (CN04.02)</span>
-                          </button>
-                          <button
-                            className="menu-item"
+                            className="menu-item menu-item-accent"
                             onClick={() => { setShowUserMenu(false); if (onOpenTutorProfile) onOpenTutorProfile('create-class'); }}
-                            style={{ width: '100%', textAlign: 'left', background: '#fdf4ff', border: '1px solid #f0abfc', borderRadius: 4, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', marginBottom: 6 }}
                           >
-                            <PlusCircle size={16} color="#c026d3" />
-                            <span style={{ fontWeight: 700, color: '#86198f' }}>🎓 Đăng ký thêm lớp dạy / Khóa học</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                              <PlusCircle size={16} />
+                              <span>Đăng ký thêm lớp / Khóa học</span>
+                            </div>
                           </button>
 
                           <button
                             className="menu-item"
                             onClick={() => { setShowUserMenu(false); if (onOpenTutorProfile) onOpenTutorProfile('profile'); }}
-                            style={{ width: '100%', textAlign: 'left', background: '#faf5ff', border: '1px solid #e9d5ff', borderRadius: 4, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', marginBottom: 6 }}
                           >
-                            <Calendar size={16} color="#7c3aed" />
-                            <span style={{ fontWeight: 600, color: '#6b21a8' }}>📋 Đăng môn nhận dạy & Lịch rảnh</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                              <Calendar size={16} color="#7c3aed" />
+                              <span>Đăng môn nhận dạy & Lịch rảnh</span>
+                            </div>
+                          </button>
+
+                          <button
+                            className="menu-item"
+                            onClick={() => { setShowUserMenu(false); if (onOpenLessonEditor) onOpenLessonEditor(); }}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                              <BookOpen size={16} color="#7c3aed" />
+                              <span>Quản lý bài học & Video</span>
+                            </div>
+                          </button>
+
+                          <button
+                            className="menu-item"
+                            onClick={() => { setShowUserMenu(false); if (onOpenTutorIncome) onOpenTutorIncome(); }}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                              <DollarSign size={16} color="#059669" />
+                              <span>Thống kê thu nhập</span>
+                            </div>
                           </button>
 
                           <button
                             className="menu-item"
                             onClick={() => { setShowUserMenu(false); if (onOpenBookings) onOpenBookings(); }}
-                            style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
                           >
                             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                               <GraduationCap size={16} color="#a435f0" />
                               <span>Yêu cầu học viên đặt lịch</span>
                             </div>
                             {notificationCount > 0 && (
-                              <span style={{ background: '#a435f0', color: '#fff', fontSize: '0.75rem', padding: '2px 7px', borderRadius: 10, fontWeight: 700 }}>
-                                {notificationCount} mới
-                              </span>
+                              <span className="menu-badge">{notificationCount}</span>
                             )}
                           </button>
-                        </>
-                      ) : currentUser.role === 'STUDENT' ? (
+                          <div className="menu-divider"></div>
+                        </div>
+                      )}
+
+                      {/* Student Tools */}
+                      {currentUser.role === 'STUDENT' && (
+                        <div className="menu-section">
+                          <button
+                            className="menu-item"
+                            onClick={() => { setShowUserMenu(false); if (onOpenBookings) onOpenBookings(); }}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                              <GraduationCap size={16} color="#2563eb" />
+                              <span>Đơn thuê gia sư của tôi</span>
+                            </div>
+                            {notificationCount > 0 && (
+                              <span className="menu-badge">{notificationCount}</span>
+                            )}
+                          </button>
+                          <div className="menu-divider"></div>
+                        </div>
+                      )}
+
+                      {/* General Account Actions */}
+                      <div className="menu-section">
+                        <div className="menu-section-label">Tài khoản & Dịch vụ</div>
+
                         <button
                           className="menu-item"
-                          onClick={() => { setShowUserMenu(false); if (onOpenBookings) onOpenBookings(); }}
-                          style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+                          onClick={() => { setShowUserMenu(false); if (onOpenProfile) onOpenProfile(); }}
                         >
                           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                            <GraduationCap size={16} color="#a435f0" />
-                            <span>Đơn thuê gia sư của tôi</span>
+                            <User size={16} color="#64748b" />
+                            <span>Hồ sơ cá nhân</span>
                           </div>
-                          {notificationCount > 0 && (
-                            <span style={{ background: '#a435f0', color: '#fff', fontSize: '0.75rem', padding: '2px 7px', borderRadius: 10, fontWeight: 700 }}>
-                              {notificationCount}
-                            </span>
-                          )}
                         </button>
-                      ) : null}
+
+                        <button
+                          className="menu-item"
+                          onClick={() => { setShowUserMenu(false); if (onOpenBankAccounts) onOpenBankAccounts(); }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                            <CreditCard size={16} color="#64748b" />
+                            <span>Thông tin tài khoản ngân hàng</span>
+                          </div>
+                        </button>
+
+                        <button
+                          className="menu-item"
+                          onClick={() => { setShowUserMenu(false); if (onOpenMyServices) onOpenMyServices(); }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                            <GraduationCap size={16} color="#64748b" />
+                            <span>Dịch vụ & Gói đã đăng ký</span>
+                          </div>
+                        </button>
+
+                        <a
+                          href="#courses"
+                          className="menu-item"
+                          onClick={() => setShowUserMenu(false)}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                            <BookOpen size={16} color="#64748b" />
+                            <span>Danh sách khóa học</span>
+                          </div>
+                        </a>
+                      </div>
 
                       <div className="menu-divider"></div>
+
+                      {/* Logout */}
                       <button
-                        className="menu-item logout-btn"
+                        className="menu-item menu-item-logout"
                         onClick={() => { setShowUserMenu(false); onLogout(); }}
-                        style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, color: '#dc2626' }}
                       >
-                        <LogOut size={16} /> Đăng xuất
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <LogOut size={16} />
+                          <span>Đăng xuất</span>
+                        </div>
                       </button>
                     </div>
                   )}
                 </div>
               ) : (
-                  <div className="ud-auth-btns">
-                    <button
-                      className="btn btn-outline"
-                      onClick={() => onOpenAuth('login')}
-                    >
-                      Đăng nhập
-                    </button>
-                    <button
-                      className="btn btn-dark"
-                      onClick={() => onOpenAuth('register')}
-                    >
-                      Đăng ký
-                    </button>
-                  </div>
-              )}
-
-                  {/* Language Globe */}
-                  <button className="ud-globe-btn" title="Chọn ngôn ngữ">
-                    <Globe size={18} />
+                <div className="ud-auth-btns">
+                  <button
+                    className="btn btn-outline"
+                    onClick={() => onOpenAuth('login')}
+                  >
+                    Đăng nhập
+                  </button>
+                  <button
+                    className="btn btn-dark"
+                    onClick={() => onOpenAuth('register')}
+                  >
+                    Đăng ký
                   </button>
                 </div>
-        </div>
-          </nav>
-        </header>
-        );
+              )}
+            </div>
+          </div>
+        </nav>
+      </header>
+    );
 }
