@@ -404,21 +404,27 @@ export default function App() {
   };
 
   const handleRemoveFromCart = async (courseId) => {
+    // Optimistic UI update
+    setCartItems(prev => prev.filter(c => c.courseId !== courseId && c.id !== courseId));
     try {
       await cartApi.removeFromCart(courseId);
       await loadCartAndWishlist(currentUser);
     } catch (err) {
       console.error('Lỗi xóa khỏi giỏ hàng:', err);
+      if (currentUser) loadCartAndWishlist(currentUser);
     }
   };
 
   const handleClearCart = async () => {
     if (!confirm('Bạn có chắc chắn muốn xóa toàn bộ khóa học trong giỏ hàng?')) return;
+    // Optimistic UI update
+    setCartItems([]);
     try {
       await cartApi.clearCart();
       await loadCartAndWishlist(currentUser);
     } catch (err) {
       console.error('Lỗi xóa sạch giỏ hàng:', err);
+      if (currentUser) loadCartAndWishlist(currentUser);
     }
   };
 
@@ -1153,6 +1159,7 @@ export default function App() {
           setReviewTargetItem(item);
           setReviewModalOpen(true);
         }}
+        onOpenCheckout={handleOpenCheckout}
       />
 
       <VerifyEmailModal

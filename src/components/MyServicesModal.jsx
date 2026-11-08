@@ -13,7 +13,10 @@ import {
   RefreshCw,
   Search,
   Filter,
-  PlayCircle
+  PlayCircle,
+  Trash2,
+  CreditCard,
+  Ban
 } from 'lucide-react';
 import { courseApi, bookingApi } from '../services/api';
 
@@ -23,7 +26,8 @@ export default function MyServicesModal({
   currentUser,
   onOpenCourse = null,
   onOpenChat = null,
-  onOpenReview = null
+  onOpenReview = null,
+  onOpenCheckout = null
 }) {
   const [activeType, setActiveType] = useState('ALL'); // 'ALL' | 'COURSE' | 'BOOKING'
   const [statusFilter, setStatusFilter] = useState('ALL'); // 'ALL' | 'ACTIVE' | 'COMPLETED'
@@ -48,12 +52,75 @@ export default function MyServicesModal({
 
       if (bookRes.status === 'fulfilled' && bookRes.value) {
         const list = Array.isArray(bookRes.value) ? bookRes.value : (bookRes.value?.result || []);
-        setBookings(list);
+        const hiddenKey = `hidden_bookings_${currentUser?.id || 'default'}`;
+        let hiddenList = [];
+        try {
+          hiddenList = JSON.parse(localStorage.getItem(hiddenKey) || '[]');
+        } catch (e) {
+          hiddenList = [];
+        }
+        setBookings(list.filter(b => !hiddenList.includes(b.id)));
       }
     } catch (err) {
       console.warn('Lỗi tải dịch vụ của tôi:', err);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Hủy đơn ghi danh khóa học đang chờ thanh toán
+  const handleCancelEnrollment = async (enrollmentId) => {
+    if (!window.confirm('Bạn có chắc chắn muốn HỦY đơn đăng ký khóa học này không?')) return;
+    try {
+      await courseApi.cancelEnrollment(enrollmentId);
+      await fetchMyServices();
+    } catch (err) {
+      alert('Không thể hủy đơn ghi danh: ' + (err.data?.message || err.message));
+    }
+  };
+
+  // Xóa đơn ghi danh đã hủy vĩnh viễn khỏi hệ thống
+  const handleDeleteEnrollment = async (enrollmentId) => {
+    if (!window.confirm('Bạn có chắc chắn muốn XÓA vĩnh viễn đơn đăng ký này khỏi danh sách?')) return;
+    setEnrollments(prev => prev.filter(e => e.id !== enrollmentId));
+    try {
+      await courseApi.deleteEnrollment(enrollmentId);
+      await fetchMyServices();
+    } catch (err) {
+      console.warn('Lỗi xóa ghi danh phía backend (đã ẩn trên UI):', err);
+    }
+  };
+
+  // Hủy đơn booking gia sư 1-1
+  const handleCancelBooking = async (bookingId) => {
+    if (!window.confirm('Bạn có chắc chắn muốn HỦY đơn kết nối gia sư này không?')) return;
+    try {
+      await bookingApi.cancelBooking(bookingId);
+      await fetchMyServices();
+    } catch (err) {
+      alert('Không thể hủy đơn gia sư: ' + (err.data?.message || err.message));
+    }
+  };
+
+  // Xóa đơn booking đã hủy
+  const handleDeleteBooking = async (bookingId) => {
+    if (!window.confirm('Bạn có chắc chắn muốn XÓA vĩnh viễn đơn kết nối này khỏi danh sách?')) return;
+    setBookings(prev => prev.filter(b => b.id !== bookingId));
+    try {
+      const hiddenKey = `hidden_bookings_${currentUser?.id || 'default'}`;
+      const existingHidden = JSON.parse(localStorage.getItem(hiddenKey) || '[]');
+      if (!existingHidden.includes(bookingId)) {
+        existingHidden.push(bookingId);
+        localStorage.setItem(hiddenKey, JSON.stringify(existingHidden));
+      }
+    } catch (e) {
+      console.warn('Lỗi lưu hidden_bookings:', e);
+    }
+    try {
+      await bookingApi.deleteBooking(bookingId);
+      await fetchMyServices();
+    } catch (err) {
+      console.warn('Lỗi xóa booking phía backend:', err);
     }
   };
 
@@ -312,117 +379,242 @@ export default function MyServicesModal({
                     </div>
 
                     {/* Action buttons */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                       {isCourse ? (
                         <>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              onClose();
-                              if (onOpenCourse) onOpenCourse(item.originalItem?.course || { id: item.courseId });
-                            }}
-                            style={{
-                              padding: '8px 14px',
-                              borderRadius: 6,
-                              background: '#2563eb',
-                              color: '#fff',
-                              border: 'none',
-                              fontWeight: 700,
-                              fontSize: '0.84rem',
-                              cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 6
-                            }}
-                          >
-                            <PlayCircle size={15} /> Vào học ngay
-                          </button>
-
-                          {/* Nút đánh giá nếu đã học */}
-                          <button
-                            type="button"
-                            onClick={() => {
-                              if (onOpenReview) {
-                                onOpenReview({
-                                  type: 'enrollment',
-                                  id: item.id,
-                                  title: item.title,
-                                  tutorName: item.tutorName
-                                });
-                              }
-                            }}
-                            style={{
-                              padding: '8px 12px',
-                              borderRadius: 6,
-                              background: '#fef3c7',
-                              color: '#b45309',
-                              border: '1px solid #fde68a',
-                              fontWeight: 700,
-                              fontSize: '0.84rem',
-                              cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 6
-                            }}
-                            title="Đánh giá chất lượng khóa học"
-                          >
-                            <Star size={14} color="#d97706" fill="#d97706" /> Đánh giá
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              onClose();
-                              if (onOpenChat) onOpenChat(item.tutorId);
-                            }}
-                            style={{
-                              padding: '8px 14px',
-                              borderRadius: 6,
-                              background: '#f5f3ff',
-                              color: '#7c3aed',
-                              border: '1px solid #ddd6fe',
-                              fontWeight: 700,
-                              fontSize: '0.84rem',
-                              cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 6
-                            }}
-                          >
-                            <MessageCircle size={15} /> Nhắn tin
-                          </button>
-
-                          {item.status === 'COMPLETED' && (
+                          {item.status === 'PENDING' ? (
+                            <>
+                              {onOpenCheckout && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    onClose();
+                                    onOpenCheckout({
+                                      type: 'course',
+                                      item: item.originalItem?.course || { id: item.courseId, title: item.title, price: item.price },
+                                      enrollmentId: item.id,
+                                      amount: item.price
+                                    });
+                                  }}
+                                  style={{
+                                    padding: '7px 12px',
+                                    borderRadius: 6,
+                                    background: '#2563eb',
+                                    color: '#fff',
+                                    border: 'none',
+                                    fontWeight: 700,
+                                    fontSize: '0.82rem',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 5
+                                  }}
+                                >
+                                  <CreditCard size={14} /> Thanh toán ngay
+                                </button>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => handleCancelEnrollment(item.id)}
+                                style={{
+                                  padding: '7px 12px',
+                                  borderRadius: 6,
+                                  background: '#fee2e2',
+                                  color: '#dc2626',
+                                  border: '1px solid #fecaca',
+                                  fontWeight: 700,
+                                  fontSize: '0.82rem',
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: 5
+                                }}
+                                title="Hủy đăng ký khóa học này"
+                              >
+                                <Ban size={14} /> Hủy đơn
+                              </button>
+                            </>
+                          ) : item.status === 'CANCELLED' ? (
                             <button
                               type="button"
-                              onClick={() => {
-                                if (onOpenReview) {
-                                  onOpenReview({
-                                    type: 'booking',
-                                    id: item.id,
-                                    title: item.title,
-                                    tutorName: item.tutorName
-                                  });
-                                }
-                              }}
+                              onClick={() => handleDeleteEnrollment(item.id)}
                               style={{
-                                padding: '8px 12px',
+                                padding: '7px 12px',
                                 borderRadius: 6,
-                                background: '#fef3c7',
-                                color: '#b45309',
-                                border: '1px solid #fde68a',
+                                background: '#f8fafc',
+                                color: '#64748b',
+                                border: '1px solid #cbd5e1',
                                 fontWeight: 700,
-                                fontSize: '0.84rem',
+                                fontSize: '0.82rem',
                                 cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: 6
+                                gap: 5
                               }}
+                              title="Xóa vĩnh viễn khỏi danh sách"
                             >
-                              <Star size={14} color="#d97706" fill="#d97706" /> Đánh giá
+                              <Trash2 size={14} /> Xóa khỏi danh sách
                             </button>
+                          ) : (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  onClose();
+                                  if (onOpenCourse) onOpenCourse(item.originalItem?.course || { id: item.courseId });
+                                }}
+                                style={{
+                                  padding: '8px 14px',
+                                  borderRadius: 6,
+                                  background: '#2563eb',
+                                  color: '#fff',
+                                  border: 'none',
+                                  fontWeight: 700,
+                                  fontSize: '0.84rem',
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: 6
+                                }}
+                              >
+                                <PlayCircle size={15} /> Vào học ngay
+                              </button>
+
+                              {/* Nút đánh giá nếu đã học */}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (onOpenReview) {
+                                    onOpenReview({
+                                      type: 'enrollment',
+                                      id: item.id,
+                                      title: item.title,
+                                      tutorName: item.tutorName
+                                    });
+                                  }
+                                }}
+                                style={{
+                                  padding: '8px 12px',
+                                  borderRadius: 6,
+                                  background: '#fef3c7',
+                                  color: '#b45309',
+                                  border: '1px solid #fde68a',
+                                  fontWeight: 700,
+                                  fontSize: '0.84rem',
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: 6
+                                }}
+                                title="Đánh giá chất lượng khóa học"
+                              >
+                                <Star size={14} color="#d97706" fill="#d97706" /> Đánh giá
+                              </button>
+                            </>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          {item.status === 'CANCELLED' ? (
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteBooking(item.id)}
+                              style={{
+                                padding: '7px 12px',
+                                borderRadius: 6,
+                                background: '#f8fafc',
+                                color: '#64748b',
+                                border: '1px solid #cbd5e1',
+                                fontWeight: 700,
+                                fontSize: '0.82rem',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 5
+                              }}
+                              title="Xóa đơn kết nối này khỏi danh sách"
+                            >
+                              <Trash2 size={14} /> Xóa khỏi danh sách
+                            </button>
+                          ) : (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  onClose();
+                                  if (onOpenChat) onOpenChat(item.tutorId);
+                                }}
+                                style={{
+                                  padding: '8px 14px',
+                                  borderRadius: 6,
+                                  background: '#f5f3ff',
+                                  color: '#7c3aed',
+                                  border: '1px solid #ddd6fe',
+                                  fontWeight: 700,
+                                  fontSize: '0.84rem',
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: 6
+                                }}
+                              >
+                                <MessageCircle size={15} /> Nhắn tin
+                              </button>
+
+                              {item.status === 'PENDING' && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleCancelBooking(item.id)}
+                                  style={{
+                                    padding: '7px 12px',
+                                    borderRadius: 6,
+                                    background: '#fee2e2',
+                                    color: '#dc2626',
+                                    border: '1px solid #fecaca',
+                                    fontWeight: 700,
+                                    fontSize: '0.82rem',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 5
+                                  }}
+                                  title="Hủy đơn kết nối gia sư này"
+                                >
+                                  <Ban size={14} /> Hủy đơn
+                                </button>
+                              )}
+
+                              {item.status === 'COMPLETED' && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    if (onOpenReview) {
+                                      onOpenReview({
+                                        type: 'booking',
+                                        id: item.id,
+                                        title: item.title,
+                                        tutorName: item.tutorName
+                                      });
+                                    }
+                                  }}
+                                  style={{
+                                    padding: '8px 12px',
+                                    borderRadius: 6,
+                                    background: '#fef3c7',
+                                    color: '#b45309',
+                                    border: '1px solid #fde68a',
+                                    fontWeight: 700,
+                                    fontSize: '0.84rem',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 6
+                                  }}
+                                >
+                                  <Star size={14} color="#d97706" fill="#d97706" /> Đánh giá
+                                </button>
+                              )}
+                            </>
                           )}
                         </>
                       )}

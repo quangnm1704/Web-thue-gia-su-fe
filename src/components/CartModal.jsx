@@ -46,10 +46,10 @@ export default function CartModal({
     }
   };
 
-  const handleRemove = async (courseId) => {
-    setRemovingId(courseId);
+  const handleRemove = async (courseOrItemId) => {
+    setRemovingId(courseOrItemId);
     try {
-      await onRemoveItem(courseId);
+      await onRemoveItem(courseOrItemId);
     } finally {
       setRemovingId(null);
     }
@@ -173,8 +173,8 @@ export default function CartModal({
                       </div>
 
                       <button 
-                        onClick={() => handleRemove(item.courseId)}
-                        disabled={removingId === item.courseId}
+                        onClick={() => handleRemove(item.courseId || item.id)}
+                        disabled={removingId === item.courseId || removingId === item.id}
                         title="Xóa khóa học này khỏi giỏ hàng"
                         style={{
                           background: 'none',

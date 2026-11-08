@@ -245,6 +245,20 @@ export const courseApi = {
       method: 'PATCH',
     });
   },
+
+  // PATCH /course-enrollments/:id/cancel (Học sinh hủy đơn ghi danh)
+  cancelEnrollment: async (enrollmentId) => {
+    return await request(`/course-enrollments/${enrollmentId}/cancel`, {
+      method: 'PATCH',
+    });
+  },
+
+  // DELETE /course-enrollments/:id (Xóa đơn ghi danh đã hủy)
+  deleteEnrollment: async (enrollmentId) => {
+    return await request(`/course-enrollments/${enrollmentId}`, {
+      method: 'DELETE',
+    });
+  },
 };
 
 /* ==================== 4. CONVERSATION & AGREEMENT ==================== */
@@ -348,6 +362,13 @@ export const bookingApi = {
   // GET /bookings/:id (Chi tiết đơn booking)
   getBooking: async (id) => {
     return await request(`/bookings/${id}`);
+  },
+
+  // DELETE /bookings/:id (Xóa đơn đặt lịch / đơn kết nối gia sư)
+  deleteBooking: async (id) => {
+    return await request(`/bookings/${id}`, {
+      method: 'DELETE',
+    });
   },
 };
 

@@ -53,13 +53,22 @@ export default function TutorBookingsModal({
     setLoading(true);
     setErrorMsg('');
     try {
+      let res = [];
       if (currentUser.role === 'TUTOR') {
-        const res = await bookingApi.getTutorBookings();
-        setBookings(res || []);
+        res = await bookingApi.getTutorBookings();
       } else {
-        const res = await bookingApi.getMyBookings();
-        setBookings(res || []);
+        res = await bookingApi.getMyBookings();
       }
+      const rawList = res || [];
+      const hiddenKey = `hidden_bookings_${currentUser?.id || 'default'}`;
+      let hiddenList = [];
+      try {
+        hiddenList = JSON.parse(localStorage.getItem(hiddenKey) || '[]');
+      } catch (e) {
+        hiddenList = [];
+      }
+      const filtered = rawList.filter(b => !hiddenList.includes(b.id));
+      setBookings(filtered);
     } catch (err) {
       console.warn('Lỗi lấy danh sách booking:', err);
       setErrorMsg('Không thể tải danh sách đơn kết nối gia sư: ' + (err.data?.message || err.message));
@@ -105,9 +114,35 @@ export default function TutorBookingsModal({
     }
   };
 
-  // Xóa đơn đã hủy khỏi giao diện hiển thị
-  const handleDeleteFromView = (bookingId) => {
+  // Xóa đơn đã hủy hoặc đơn nháp khỏi danh sách và CSDL
+  const handleDeleteBooking = async (bookingId) => {
+    if (!window.confirm('Bạn có chắc chắn muốn xóa đơn này vĩnh viễn khỏi danh sách không?')) {
+      return;
+    }
+
+    // 1. Optimistic removal khỏi UI ngay lập tức
     setBookings(prev => prev.filter(b => b.id !== bookingId));
+
+    // 2. Lưu ID vào danh sách đã ẩn trong localStorage để không bao giờ hiện lại
+    try {
+      const hiddenKey = `hidden_bookings_${currentUser?.id || 'default'}`;
+      const existingHidden = JSON.parse(localStorage.getItem(hiddenKey) || '[]');
+      if (!existingHidden.includes(bookingId)) {
+        existingHidden.push(bookingId);
+        localStorage.setItem(hiddenKey, JSON.stringify(existingHidden));
+      }
+    } catch (e) {
+      console.warn('Lỗi lưu hidden_bookings:', e);
+    }
+
+    // 3. Gọi Backend API xóa vĩnh viễn khỏi CSDL
+    try {
+      await bookingApi.deleteBooking(bookingId);
+      setSuccessMsg('Đã xóa đơn thành công khỏi hệ thống!');
+    } catch (err) {
+      console.warn('Lỗi xóa đơn phía backend (đã ẩn trên giao diện):', err);
+      // Đơn vẫn được ẩn an toàn trong giao diện và localStorage
+    }
   };
 
   // Gửi khiếu nại đơn booking cho Admin
@@ -440,7 +475,7 @@ export default function TutorBookingsModal({
                               gap: 5,
                               background: '#f8fafc'
                             }}
-                            onClick={() => handleDeleteFromView(booking.id)}
+                            onClick={() => handleDeleteBooking(booking.id)}
                             title="Xóa đơn này khỏi màn hình xem"
                           >
                             <Trash2 size={14} /> Xóa khỏi danh sách
