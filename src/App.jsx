@@ -25,6 +25,9 @@ import PaymentCheckoutModal from './components/PaymentCheckoutModal';
 import WalletTopUpModal from './components/WalletTopUpModal';
 import TutorApplicationModal from './components/TutorApplicationModal';
 import TutorProfileModal from './components/TutorProfileModal';
+import UserProfileModal from './components/UserProfileModal';
+import BankAccountModal from './components/BankAccountModal';
+import TutorIncomeModal from './components/TutorIncomeModal';
 import { topTutors, featuredCourses, communityArticles } from './data/mockData';
 import {
   authApi,
@@ -86,10 +89,14 @@ export default function App() {
   const [tutorApplicationModalOpen, setTutorApplicationModalOpen] = useState(false);
   const [tutorProfileModalOpen, setTutorProfileModalOpen] = useState(false);
   const [tutorProfileInitialTab, setTutorProfileInitialTab] = useState('profile');
+  const [userProfileModalOpen, setUserProfileModalOpen] = useState(false);
+  const [bankAccountModalOpen, setBankAccountModalOpen] = useState(false);
+  const [tutorIncomeModalOpen, setTutorIncomeModalOpen] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
 
   // Wallet & Payment Checkout State
   const [walletModalOpen, setWalletModalOpen] = useState(false);
+  const [walletInitialTab, setWalletInitialTab] = useState('deposit');
   const [userWallet, setUserWallet] = useState({ availableBalance: 0, holdingBalance: 0 });
   const [checkoutModalOpen, setCheckoutModalOpen] = useState(false);
   const [checkoutData, setCheckoutData] = useState({
@@ -782,6 +789,9 @@ export default function App() {
           setTutorProfileInitialTab(tab || 'create-class');
           setTutorProfileModalOpen(true);
         }}
+        onOpenProfile={() => setUserProfileModalOpen(true)}
+        onOpenBankAccounts={() => setBankAccountModalOpen(true)}
+        onOpenTutorIncome={() => setTutorIncomeModalOpen(true)}
       />
 
       <main>
@@ -1025,9 +1035,43 @@ export default function App() {
 
       <WalletTopUpModal
         isOpen={walletModalOpen}
-        onClose={() => setWalletModalOpen(false)}
+        onClose={() => {
+          setWalletModalOpen(false);
+          setWalletInitialTab('deposit');
+        }}
         currentUser={currentUser}
+        initialTab={walletInitialTab}
+        onOpenBankAccounts={() => {
+          setWalletModalOpen(false);
+          setBankAccountModalOpen(true);
+        }}
         onWalletUpdated={(w) => setUserWallet(w)}
+      />
+
+      <UserProfileModal
+        isOpen={userProfileModalOpen}
+        onClose={() => setUserProfileModalOpen(false)}
+        currentUser={currentUser}
+        onProfileUpdated={(updated) => {
+          setCurrentUser(updated);
+          localStorage.setItem('user', JSON.stringify(updated));
+        }}
+      />
+
+      <BankAccountModal
+        isOpen={bankAccountModalOpen}
+        onClose={() => setBankAccountModalOpen(false)}
+        currentUser={currentUser}
+      />
+
+      <TutorIncomeModal
+        isOpen={tutorIncomeModalOpen}
+        onClose={() => setTutorIncomeModalOpen(false)}
+        currentUser={currentUser}
+        onOpenWithdraw={() => {
+          setWalletInitialTab('withdraw');
+          setWalletModalOpen(true);
+        }}
       />
 
       <TutorApplicationModal

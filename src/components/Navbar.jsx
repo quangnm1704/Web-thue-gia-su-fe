@@ -19,7 +19,9 @@ import {
   ArrowRight,
   Calendar,
   PlusCircle,
-  BookPlus
+  BookPlus,
+  CreditCard,
+  DollarSign
 } from 'lucide-react';
 import { categories } from '../data/mockData';
 
@@ -59,7 +61,10 @@ export default function Navbar({
   onSelectCourse = null,
   onSelectTutor = null,
   onOpenTutorApplication = null,
-  onOpenTutorProfile = null
+  onOpenTutorProfile = null,
+  onOpenProfile = null,
+  onOpenBankAccounts = null,
+  onOpenTutorIncome = null
 }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [showCategories, setShowCategories] = useState(false);
@@ -717,8 +722,37 @@ export default function Navbar({
                         <BookOpen size={16} /> Danh sách khóa học
                       </a>
 
+                      {/* Quản lý hồ sơ cá nhân (CN02.01) */}
+                      <button
+                        className="menu-item"
+                        onClick={() => { setShowUserMenu(false); if (onOpenProfile) onOpenProfile(); }}
+                        style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px' }}
+                      >
+                        <User size={16} color="#475569" />
+                        <span>👤 Hồ sơ cá nhân (CN02.01)</span>
+                      </button>
+
+                      {/* Quản lý thông tin ngân hàng (CN02.02) */}
+                      <button
+                        className="menu-item"
+                        onClick={() => { setShowUserMenu(false); if (onOpenBankAccounts) onOpenBankAccounts(); }}
+                        style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px' }}
+                      >
+                        <CreditCard size={16} color="#059669" />
+                        <span>💳 Thông tin ngân hàng (CN02.02)</span>
+                      </button>
+
                       {currentUser.role === 'TUTOR' ? (
                         <>
+                          {/* Theo dõi thu nhập gia sư (CN04.03) */}
+                          <button
+                            className="menu-item"
+                            onClick={() => { setShowUserMenu(false); if (onOpenTutorIncome) onOpenTutorIncome(); }}
+                            style={{ width: '100%', textAlign: 'left', background: '#ecfdf5', border: '1px solid #a7f3d0', borderRadius: 4, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', marginBottom: 6 }}
+                          >
+                            <DollarSign size={16} color="#059669" />
+                            <span style={{ fontWeight: 700, color: '#047857' }}>📊 Thống kê thu nhập (CN04.03)</span>
+                          </button>
                           <button
                             className="menu-item"
                             onClick={() => { setShowUserMenu(false); if (onOpenTutorProfile) onOpenTutorProfile('create-class'); }}

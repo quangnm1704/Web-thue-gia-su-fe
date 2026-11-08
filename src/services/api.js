@@ -631,3 +631,85 @@ export const tutorProfileApi = {
     });
   },
 };
+
+/* ==================== 17. USER PROFILE API ==================== */
+export const userApi = {
+  // PATCH /users/:userId (Cập nhật hồ sơ cá nhân: tên, SĐT, avatar, link Zalo)
+  updateProfile: async (userId, data) => {
+    return await request(`/users/${userId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  },
+
+  // GET /users (Thông tin cá nhân của tôi)
+  getMyUser: async () => {
+    return await request('/users');
+  },
+};
+
+/* ==================== 18. PAYMENT METHOD / BANK ACCOUNT API ==================== */
+export const paymentMethodApi = {
+  // GET /payment-methods/user/:userId
+  getByUserId: async (userId) => {
+    return await request(`/payment-methods/user/${userId}`);
+  },
+
+  // POST /payment-methods
+  create: async (data) => {
+    return await request('/payment-methods', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  // PUT /payment-methods/:id/default
+  setDefault: async (id) => {
+    return await request(`/payment-methods/${id}/default`, {
+      method: 'PUT',
+    });
+  },
+
+  // DELETE /payment-methods/:id
+  delete: async (id) => {
+    return await request(`/payment-methods/${id}`, {
+      method: 'DELETE',
+    });
+  },
+};
+
+/* ==================== 19. WITHDRAWAL API ==================== */
+export const withdrawalApi = {
+  // POST /withdrawals (Gia sư gửi yêu cầu rút tiền về STK ngân hàng)
+  create: async (data) => {
+    return await request('/withdrawals', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  // GET /withdrawals/me (Lấy lịch sử rút tiền của tôi)
+  getMyWithdrawals: async () => {
+    return await request('/withdrawals/me');
+  },
+
+  // GET /admin/withdrawals (Admin lấy toàn bộ yêu cầu rút tiền)
+  getAllAdmin: async () => {
+    return await request('/admin/withdrawals');
+  },
+
+  // PATCH /admin/withdrawals/:id/approve (Admin duyệt lệnh rút tiền)
+  approve: async (id) => {
+    return await request(`/admin/withdrawals/${id}/approve`, {
+      method: 'PATCH',
+    });
+  },
+
+  // PATCH /admin/withdrawals/:id/reject (Admin từ chối lệnh rút tiền kèm lý do)
+  reject: async (id, reason) => {
+    return await request(`/admin/withdrawals/${id}/reject`, {
+      method: 'PATCH',
+      body: JSON.stringify({ reason }),
+    });
+  },
+};

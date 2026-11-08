@@ -26,9 +26,11 @@ import {
   GraduationCap,
   Filter,
   Check,
-  Clock
+  Clock,
+  ArrowUpRight,
+  Building2
 } from 'lucide-react';
-import { adminApi, articleApi } from '../services/api';
+import { adminApi, articleApi, withdrawalApi } from '../services/api';
 
 export default function AdminPortal({ currentUser, onBackToClient, onLogout, onDeleteArticle }) {
   const [activeTab, setActiveTab] = useState('overview');
@@ -38,6 +40,10 @@ export default function AdminPortal({ currentUser, onBackToClient, onLogout, onD
   const [articles, setArticles] = useState([]);
   const [disputes, setDisputes] = useState([]);
   const [withdrawals, setWithdrawals] = useState([]);
+  const [withdrawalFilter, setWithdrawalFilter] = useState('ALL');
+  const [rejectModalOpen, setRejectModalOpen] = useState(false);
+  const [selectedWithdrawalForReject, setSelectedWithdrawalForReject] = useState(null);
+  const [rejectReason, setRejectReason] = useState('');
   const [actionLogs, setActionLogs] = useState([]);
   const [actionLogFilter, setActionLogFilter] = useState('');
   const [actionLogLoading, setActionLogLoading] = useState(false);
@@ -222,6 +228,46 @@ export default function AdminPortal({ currentUser, onBackToClient, onLogout, onD
     }
   };
 
+  // Duyệt lệnh rút tiền (CN06.11)
+  const handleApproveWithdrawal = async (w) => {
+    const formattedAmt = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(w.amount);
+    if (!window.confirm(`Xác nhận DUYỆT lệnh rút tiền ${formattedAmt} cho ${w.accountHolder} (${w.bankName} - ${w.accountNumber})?`)) return;
+    setProcessingId(w.id);
+    try {
+      const res = await withdrawalApi.approve(w.id);
+      showToast(`Đã duyệt thành công lệnh rút tiền #${w.id.slice(0, 8)}!`);
+      setWithdrawals(prev => prev.map(item => item.id === w.id ? { ...item, status: 'COMPLETED', ...(res || {}) } : item));
+    } catch (err) {
+      alert('Lỗi khi duyệt lệnh rút tiền: ' + (err.data?.message || err.message));
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  // Mở modal từ chối lệnh rút tiền
+  const handleOpenRejectWithdrawal = (w) => {
+    setSelectedWithdrawalForReject(w);
+    setRejectReason('Thông tin tài khoản ngân hàng không chính xác hoặc không hợp lệ');
+    setRejectModalOpen(true);
+  };
+
+  // Xác nhận từ chối lệnh rút tiền kèm lý do & hoàn tiền về ví (CN06.11)
+  const handleConfirmRejectWithdrawal = async () => {
+    if (!selectedWithdrawalForReject) return;
+    setProcessingId(selectedWithdrawalForReject.id);
+    try {
+      const res = await withdrawalApi.reject(selectedWithdrawalForReject.id, rejectReason);
+      showToast(`Đã từ chối lệnh rút tiền #${selectedWithdrawalForReject.id.slice(0, 8)} và hoàn trả tiền vào ví!`);
+      setWithdrawals(prev => prev.map(item => item.id === selectedWithdrawalForReject.id ? { ...item, status: 'REJECTED', ...(res || {}) } : item));
+      setRejectModalOpen(false);
+      setSelectedWithdrawalForReject(null);
+    } catch (err) {
+      alert('Lỗi từ chối lệnh rút tiền: ' + (err.data?.message || err.message));
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
   const formatVND = (amount) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount || 0);
   };
@@ -245,6 +291,19 @@ export default function AdminPortal({ currentUser, onBackToClient, onLogout, onD
 
   // Số lượng đơn PENDING chờ duyệt
   const pendingAppsCount = applications.filter(a => a.status === 'PENDING').length;
+
+  // Lọc danh sách Yêu cầu Rút tiền (CN06.11)
+  const filteredWithdrawals = withdrawals.filter(w => {
+    const matchesStatus = withdrawalFilter === 'ALL' || w.status === withdrawalFilter;
+    const matchesSearch = (w.bankName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (w.accountNumber || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (w.accountHolder || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (w.id || '').toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesStatus && matchesSearch;
+  });
+
+  // Số lượng lệnh rút tiền PROCESSING chờ duyệt
+  const pendingWithdrawalsCount = withdrawals.filter(w => w.status === 'PROCESSING').length;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#f8fafc', color: '#0f172a', fontFamily: 'inherit' }}>
@@ -529,6 +588,38 @@ export default function AdminPortal({ currentUser, onBackToClient, onLogout, onD
             <span style={{ fontSize: '0.75rem', background: '#e2e8f0', color: '#475569', padding: '1px 7px', borderRadius: 10, fontWeight: 700 }}>
               {disputes.length}
             </span>
+          </button>
+
+          <button
+            onClick={() => { setActiveTab('withdrawals'); setSearchTerm(''); }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '11px 20px',
+              border: 'none',
+              background: activeTab === 'withdrawals' ? '#f5f3ff' : 'transparent',
+              color: activeTab === 'withdrawals' ? '#7c3aed' : '#475569',
+              fontWeight: activeTab === 'withdrawals' ? 700 : 500,
+              fontSize: '0.9rem',
+              textAlign: 'left',
+              cursor: 'pointer',
+              borderLeft: activeTab === 'withdrawals' ? '4px solid #7c3aed' : '4px solid transparent'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <CreditCard size={18} />
+              <span>Yêu cầu Rút tiền (CN06.11)</span>
+            </div>
+            {pendingWithdrawalsCount > 0 ? (
+              <span style={{ fontSize: '0.75rem', background: '#ea580c', color: '#fff', padding: '1px 7px', borderRadius: 10, fontWeight: 700 }}>
+                {pendingWithdrawalsCount}
+              </span>
+            ) : (
+              <span style={{ fontSize: '0.75rem', background: '#e2e8f0', color: '#475569', padding: '1px 7px', borderRadius: 10, fontWeight: 700 }}>
+                {withdrawals.length}
+              </span>
+            )}
           </button>
 
           {/* Group 3 */}
@@ -1521,8 +1612,239 @@ export default function AdminPortal({ currentUser, onBackToClient, onLogout, onD
             </div>
           )}
 
+          {/* TAB 7: XỬ LÝ YÊU CẦU RÚT TIỀN (CN06.11) */}
+          {activeTab === 'withdrawals' && (
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                <div>
+                  <h2 style={{ fontSize: '1.35rem', fontWeight: 800, margin: 0, color: '#0f172a' }}>
+                    Quản Lý & Duyệt Lệnh Rút Tiền (CN06.11)
+                  </h2>
+                  <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '0.88rem' }}>
+                    Kiểm tra thông tin tài khoản ngân hàng của gia sư, duyệt lệnh chuyển tiền hoặc từ chối kèm lý do (tự động hoàn tiền về ví).
+                  </p>
+                </div>
+
+                {/* Status Filter Buttons */}
+                <div style={{ display: 'flex', gap: 6, background: '#f1f5f9', padding: 4, borderRadius: 8 }}>
+                  {['ALL', 'PROCESSING', 'COMPLETED', 'REJECTED'].map((st) => {
+                    const isSel = withdrawalFilter === st;
+                    const label = st === 'ALL' ? 'Tất cả' : (st === 'PROCESSING' ? `Chờ duyệt (${pendingWithdrawalsCount})` : (st === 'COMPLETED' ? 'Đã duyệt' : 'Đã từ chối'));
+                    return (
+                      <button
+                        key={st}
+                        onClick={() => setWithdrawalFilter(st)}
+                        style={{
+                          padding: '6px 12px',
+                          borderRadius: 6,
+                          border: 'none',
+                          background: isSel ? '#fff' : 'transparent',
+                          color: isSel ? '#7c3aed' : '#64748b',
+                          fontWeight: isSel ? 700 : 500,
+                          fontSize: '0.82rem',
+                          cursor: 'pointer',
+                          boxShadow: isSel ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
+                        }}
+                      >
+                        {label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {filteredWithdrawals.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '60px 20px', background: '#fff', borderRadius: 10, border: '1px solid #e2e8f0', color: '#64748b' }}>
+                  <CreditCard size={40} style={{ color: '#cbd5e1', margin: '0 auto 12px' }} />
+                  <p>Không có yêu cầu rút tiền nào phù hợp.</p>
+                </div>
+              ) : (
+                <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 10, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.88rem' }}>
+                    <thead>
+                      <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+                        <th style={{ padding: '12px 18px', fontWeight: 700, color: '#475569' }}>Mã GD</th>
+                        <th style={{ padding: '12px 18px', fontWeight: 700, color: '#475569' }}>Người yêu cầu</th>
+                        <th style={{ padding: '12px 18px', fontWeight: 700, color: '#475569', textAlign: 'right' }}>Số tiền rút</th>
+                        <th style={{ padding: '12px 18px', fontWeight: 700, color: '#475569' }}>Ngân hàng & STK</th>
+                        <th style={{ padding: '12px 18px', fontWeight: 700, color: '#475569' }}>Chủ tài khoản</th>
+                        <th style={{ padding: '12px 18px', fontWeight: 700, color: '#475569', textAlign: 'center' }}>Trạng thái</th>
+                        <th style={{ padding: '12px 18px', fontWeight: 700, color: '#475569' }}>Ngày tạo</th>
+                        <th style={{ padding: '12px 18px', fontWeight: 700, color: '#475569', textAlign: 'right' }}>Thao tác</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredWithdrawals.map((w) => (
+                        <tr key={w.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                          <td style={{ padding: '14px 18px', fontFamily: 'monospace', fontWeight: 600, color: '#334155' }}>
+                            #{w.id?.slice(0, 8)}
+                          </td>
+                          <td style={{ padding: '14px 18px', fontSize: '0.82rem', color: '#64748b' }}>
+                            <span style={{ fontFamily: 'monospace' }}>{w.userId ? `${w.userId.slice(0, 8)}...` : 'Tutor'}</span>
+                          </td>
+                          <td style={{ padding: '14px 18px', textAlign: 'right', fontWeight: 800, fontSize: '0.95rem', color: '#0f172a' }}>
+                            {formatVND(w.amount)}
+                          </td>
+                          <td style={{ padding: '14px 18px' }}>
+                            <strong style={{ color: '#0f172a', display: 'block' }}>{w.bankName}</strong>
+                            <span style={{ color: '#64748b', fontSize: '0.8rem', fontFamily: 'monospace' }}>{w.accountNumber}</span>
+                          </td>
+                          <td style={{ padding: '14px 18px', fontWeight: 600, color: '#334155', textTransform: 'uppercase' }}>
+                            {w.accountHolder}
+                          </td>
+                          <td style={{ padding: '14px 18px', textAlign: 'center' }}>
+                            <span style={{
+                              fontSize: '0.74rem',
+                              fontWeight: 700,
+                              padding: '3px 8px',
+                              borderRadius: 100,
+                              backgroundColor: w.status === 'COMPLETED' ? '#dcfce7' : (w.status === 'REJECTED' ? '#fee2e2' : '#fef3c7'),
+                              color: w.status === 'COMPLETED' ? '#15803d' : (w.status === 'REJECTED' ? '#b91c1c' : '#b45309')
+                            }}>
+                              {w.status === 'COMPLETED' ? 'ĐÃ DUYỆT' : (w.status === 'REJECTED' ? 'TỪ CHỐI' : 'CHỜ DUYỆT')}
+                            </span>
+                          </td>
+                          <td style={{ padding: '14px 18px', color: '#64748b', fontSize: '0.82rem' }}>
+                            {w.createdAt ? new Date(w.createdAt).toLocaleDateString('vi-VN') : 'Gần đây'}
+                          </td>
+                          <td style={{ padding: '14px 18px', textAlign: 'right' }}>
+                            {w.status === 'PROCESSING' ? (
+                              <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
+                                <button
+                                  onClick={() => handleApproveWithdrawal(w)}
+                                  disabled={processingId === w.id}
+                                  style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 4,
+                                    padding: '5px 10px',
+                                    borderRadius: 6,
+                                    border: 'none',
+                                    backgroundColor: '#16a34a',
+                                    color: '#fff',
+                                    fontWeight: 700,
+                                    fontSize: '0.78rem',
+                                    cursor: 'pointer'
+                                  }}
+                                  title="Duyệt chuyển tiền thành công"
+                                >
+                                  {processingId === w.id ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
+                                  <span>Duyệt</span>
+                                </button>
+                                <button
+                                  onClick={() => handleOpenRejectWithdrawal(w)}
+                                  disabled={processingId === w.id}
+                                  style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 4,
+                                    padding: '5px 10px',
+                                    borderRadius: 6,
+                                    border: '1px solid #fca5a5',
+                                    backgroundColor: '#fee2e2',
+                                    color: '#b91c1c',
+                                    fontWeight: 700,
+                                    fontSize: '0.78rem',
+                                    cursor: 'pointer'
+                                  }}
+                                  title="Từ chối và hoàn tiền về ví"
+                                >
+                                  <XCircle size={12} />
+                                  <span>Từ chối</span>
+                                </button>
+                              </div>
+                            ) : (
+                              <span style={{ fontSize: '0.78rem', color: '#94a3b8' }}>
+                                {w.status === 'COMPLETED' ? 'Đã giải ngân' : 'Đã hoàn ví'}
+                              </span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
+
         </main>
       </div>
+
+      {/* MODAL TỪ CHỐI LỆNH RÚT TIỀN (CN06.11) */}
+      {rejectModalOpen && selectedWithdrawalForReject && (
+        <div className="ud-modal-backdrop" onClick={() => setRejectModalOpen(false)} style={{ zIndex: 1300 }}>
+          <div className="ud-detail-modal-card animate-fade-in" style={{ maxWidth: 480, padding: 24 }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#b91c1c', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <XCircle size={20} color="#dc2626" /> Từ Chối Lệnh Rút Tiền
+              </h3>
+              <button onClick={() => setRejectModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}>
+                <X size={18} />
+              </button>
+            </div>
+
+            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8, padding: 12, marginBottom: 16, fontSize: '0.85rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                <span style={{ color: '#64748b' }}>Số tiền rút:</span>
+                <strong style={{ color: '#0f172a' }}>{formatVND(selectedWithdrawalForReject.amount)}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                <span style={{ color: '#64748b' }}>Ngân hàng:</span>
+                <span style={{ fontWeight: 600 }}>{selectedWithdrawalForReject.bankName} - {selectedWithdrawalForReject.accountNumber}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#64748b' }}>Chủ tài khoản:</span>
+                <span style={{ fontWeight: 600, textTransform: 'uppercase' }}>{selectedWithdrawalForReject.accountHolder}</span>
+              </div>
+            </div>
+
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: 6 }}>
+                Lý do từ chối (Gia sư sẽ nhìn thấy thông báo này):
+              </label>
+              <textarea
+                rows={3}
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)}
+                placeholder="Nhập lý do từ chối yêu cầu rút tiền..."
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  borderRadius: 6,
+                  border: '1px solid #cbd5e1',
+                  fontSize: '0.88rem',
+                  outline: 'none',
+                  boxSizing: 'border-box'
+                }}
+              />
+            </div>
+
+            <div style={{ background: '#fff7ed', border: '1px solid #ffedd5', borderRadius: 6, padding: '10px 12px', marginBottom: 18, fontSize: '0.8rem', color: '#c2410c' }}>
+              💡 Khi xác nhận, số tiền <strong>{formatVND(selectedWithdrawalForReject.amount)}</strong> sẽ được tự động hoàn trả vào ví của người dùng.
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+              <button
+                type="button"
+                onClick={() => setRejectModalOpen(false)}
+                style={{ padding: '8px 16px', borderRadius: 6, border: '1px solid #cbd5e1', background: '#fff', color: '#475569', fontWeight: 600, cursor: 'pointer' }}
+              >
+                Hủy bỏ
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmRejectWithdrawal}
+                disabled={processingId === selectedWithdrawalForReject.id || !rejectReason.trim()}
+                style={{ padding: '8px 16px', borderRadius: 6, border: 'none', background: '#dc2626', color: '#fff', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+              >
+                {processingId === selectedWithdrawalForReject.id ? <Loader2 size={14} className="animate-spin" /> : <XCircle size={14} />}
+                Xác nhận Từ chối & Hoàn ví
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
