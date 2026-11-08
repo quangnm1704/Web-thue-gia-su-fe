@@ -388,3 +388,4 @@ export default function BankAccountModal({ isOpen, onClose, currentUser }) {
     </div>
   );
 }
+

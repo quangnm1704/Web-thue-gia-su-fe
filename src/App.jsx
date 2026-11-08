@@ -28,6 +28,10 @@ import TutorProfileModal from './components/TutorProfileModal';
 import UserProfileModal from './components/UserProfileModal';
 import BankAccountModal from './components/BankAccountModal';
 import TutorIncomeModal from './components/TutorIncomeModal';
+import CourseLessonEditorModal from './components/CourseLessonEditorModal';
+import ReviewModal from './components/ReviewModal';
+import MyServicesModal from './components/MyServicesModal';
+import VerifyEmailModal from './components/VerifyEmailModal';
 import { topTutors, featuredCourses, communityArticles } from './data/mockData';
 import {
   authApi,
@@ -83,6 +87,15 @@ export default function App() {
       setIsAdminView(window.location.hash === '#admin');
     };
     window.addEventListener('hashchange', handleHashChange);
+
+    // Kiểm tra token xác thực email trong URL (?token=... hoặc #verify-email?token=...)
+    const urlParams = new URLSearchParams(window.location.search);
+    const tokenFromQuery = urlParams.get('token');
+    if (tokenFromQuery) {
+      setVerifyEmailInitialToken(tokenFromQuery);
+      setVerifyEmailModalOpen(true);
+    }
+
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
@@ -92,6 +105,12 @@ export default function App() {
   const [userProfileModalOpen, setUserProfileModalOpen] = useState(false);
   const [bankAccountModalOpen, setBankAccountModalOpen] = useState(false);
   const [tutorIncomeModalOpen, setTutorIncomeModalOpen] = useState(false);
+  const [courseLessonEditorModalOpen, setCourseLessonEditorModalOpen] = useState(false);
+  const [reviewModalOpen, setReviewModalOpen] = useState(false);
+  const [reviewTargetItem, setReviewTargetItem] = useState(null);
+  const [myServicesModalOpen, setMyServicesModalOpen] = useState(false);
+  const [verifyEmailModalOpen, setVerifyEmailModalOpen] = useState(false);
+  const [verifyEmailInitialToken, setVerifyEmailInitialToken] = useState('');
   const [notificationCount, setNotificationCount] = useState(0);
 
   // Wallet & Payment Checkout State
@@ -792,6 +811,8 @@ export default function App() {
         onOpenProfile={() => setUserProfileModalOpen(true)}
         onOpenBankAccounts={() => setBankAccountModalOpen(true)}
         onOpenTutorIncome={() => setTutorIncomeModalOpen(true)}
+        onOpenMyServices={() => setMyServicesModalOpen(true)}
+        onOpenLessonEditor={() => setCourseLessonEditorModalOpen(true)}
       />
 
       <main>
@@ -919,6 +940,7 @@ export default function App() {
         onClose={() => setAuthModalOpen(false)}
         initialMode={authMode}
         onLoginSuccess={handleLoginSuccess}
+        onOpenVerifyEmail={() => setVerifyEmailModalOpen(true)}
       />
 
       <ErrorBoundary onReset={() => setSelectedCourse(null)}>
@@ -931,6 +953,10 @@ export default function App() {
           isEnrolled={selectedCourse ? enrolledCourseIds.includes(selectedCourse.id) : false}
           currentUser={currentUser}
           onOpenAuth={handleOpenAuth}
+          onOpenReview={(item) => {
+            setReviewTargetItem(item);
+            setReviewModalOpen(true);
+          }}
         />
       </ErrorBoundary>
 
@@ -954,6 +980,10 @@ export default function App() {
         onOpenChat={handleOpenChatWithStudent}
         onOpenCheckout={handleOpenCheckout}
         onWalletUpdated={() => loadUserWallet(currentUser)}
+        onOpenReview={(item) => {
+          setReviewTargetItem(item);
+          setReviewModalOpen(true);
+        }}
       />
 
       <ChatModal
@@ -1091,6 +1121,48 @@ export default function App() {
         currentUser={currentUser}
         initialTab={tutorProfileInitialTab}
         onCourseCreated={fetchCourses}
+      />
+
+      <CourseLessonEditorModal
+        isOpen={courseLessonEditorModalOpen}
+        onClose={() => setCourseLessonEditorModalOpen(false)}
+        currentUser={currentUser}
+        onCoursesUpdated={fetchCourses}
+      />
+
+      <ReviewModal
+        isOpen={reviewModalOpen}
+        onClose={() => {
+          setReviewModalOpen(false);
+          setReviewTargetItem(null);
+        }}
+        targetItem={reviewTargetItem}
+        onReviewSubmitted={() => {
+          fetchCourses();
+          if (currentUser) loadUserNotifications(currentUser);
+        }}
+      />
+
+      <MyServicesModal
+        isOpen={myServicesModalOpen}
+        onClose={() => setMyServicesModalOpen(false)}
+        currentUser={currentUser}
+        onOpenCourse={(c) => setSelectedCourse(c)}
+        onOpenChat={(tutorId) => handleChatTutor({ id: tutorId })}
+        onOpenReview={(item) => {
+          setReviewTargetItem(item);
+          setReviewModalOpen(true);
+        }}
+      />
+
+      <VerifyEmailModal
+        isOpen={verifyEmailModalOpen}
+        onClose={() => {
+          setVerifyEmailModalOpen(false);
+          setVerifyEmailInitialToken('');
+        }}
+        initialToken={verifyEmailInitialToken}
+        onOpenLogin={() => handleOpenAuth('login')}
       />
     </div>
   );

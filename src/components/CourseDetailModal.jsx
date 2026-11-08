@@ -73,7 +73,8 @@ export default function CourseDetailModal({
   isEnrolled = false,
   currentUser = null,
   onOpenAuth = null,
-  onAddToCart = null
+  onAddToCart = null,
+  onOpenReview = null
 }) {
   const [lessons, setLessons] = useState([]);
   const [isLoadingLessons, setIsLoadingLessons] = useState(false);
@@ -536,6 +537,44 @@ export default function CourseDetailModal({
                     }}
                   />
                 </div>
+
+                {/* Banner viết đánh giá khi hoàn thành 100% (CN02.16 & CN02.18) */}
+                {progressPercent === 100 && (
+                  <div style={{ marginTop: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#ecfdf5', border: '1px solid #a7f3d0', borderRadius: 8, padding: '10px 14px' }}>
+                    <span style={{ fontSize: '0.84rem', color: '#065f46', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <Sparkles size={16} color="#059669" /> Bạn đã hoàn thành 100% khóa học! Hãy chia sẻ trải nghiệm:
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onClose();
+                        if (onOpenReview) {
+                          onOpenReview({
+                            type: 'enrollment',
+                            id: course.id,
+                            title: course.title,
+                            tutorName: course.instructor
+                          });
+                        }
+                      }}
+                      style={{
+                        padding: '6px 14px',
+                        background: '#eab308',
+                        color: '#000',
+                        border: 'none',
+                        borderRadius: 6,
+                        fontWeight: 800,
+                        fontSize: '0.82rem',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 4
+                      }}
+                    >
+                      <Star size={14} fill="#000" /> Viết Đánh Giá
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 

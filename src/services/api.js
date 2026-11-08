@@ -114,6 +114,11 @@ export const authApi = {
 
   getToken: () => localStorage.getItem('token'),
   isAuthenticated: () => !!localStorage.getItem('token'),
+
+  // GET /auth/verify-email?token=... (Xác thực Email tài khoản mới CN01.03)
+  verifyEmail: async (token) => {
+    return await request(`/auth/verify-email?token=${encodeURIComponent(token)}`);
+  },
 };
 
 /* ==================== 2. ARTICLES & COMMENTS ==================== */
@@ -188,6 +193,11 @@ export const courseApi = {
   // GET /courses/:id
   getCourse: async (id) => {
     return await request(`/courses/${id}`);
+  },
+
+  // GET /courses/tutor/:tutorId (Lấy danh sách khóa học do gia sư tạo)
+  getByTutorId: async (tutorId) => {
+    return await request(`/courses/tutor/${tutorId}`);
   },
 
   // GET /lessons/course/:courseId (Lấy danh sách bài học của khóa học)
@@ -711,5 +721,57 @@ export const withdrawalApi = {
       method: 'PATCH',
       body: JSON.stringify({ reason }),
     });
+  },
+};
+
+/* ==================== 20. LESSON MANAGEMENT API (CN04.02) ==================== */
+export const lessonApi = {
+  // GET /lessons/course/:courseId
+  getByCourse: async (courseId) => {
+    return await request(`/lessons/course/${courseId}`);
+  },
+
+  // POST /lessons/courses/:courseId (Gia sư thêm bài học mới)
+  create: async (courseId, data) => {
+    return await request(`/lessons/courses/${courseId}`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  // PATCH /lessons/:id (Gia sư chỉnh sửa bài học)
+  update: async (id, data) => {
+    return await request(`/lessons/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  },
+
+  // DELETE /lessons/:id (Gia sư xóa bài học)
+  delete: async (id) => {
+    return await request(`/lessons/${id}`, {
+      method: 'DELETE',
+    });
+  },
+};
+
+/* ==================== 21. REVIEWS & FEEDBACK API (CN02.18) ==================== */
+export const reviewApi = {
+  // POST /reviews (Học viên đánh giá sau khi hoàn tất buổi học/khóa học)
+  create: async (data) => {
+    return await request('/reviews', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  // GET /reviews/tutor/:tutorId (Xem các đánh giá của 1 gia sư)
+  getByTutor: async (tutorId) => {
+    return await request(`/reviews/tutor/${tutorId}`);
+  },
+
+  // GET /reviews/tutor (Gia sư tự xem đánh giá của mình)
+  getMyReviews: async () => {
+    return await request('/reviews/tutor');
   },
 };

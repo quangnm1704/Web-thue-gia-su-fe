@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { X, GraduationCap, Lock, Mail, User, AlertCircle, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { authApi, getRoleFromToken } from '../services/api';
 
-export default function AuthModal({ isOpen, onClose, initialMode = 'login', onLoginSuccess }) {
+export default function AuthModal({ isOpen, onClose, initialMode = 'login', onLoginSuccess, onOpenVerifyEmail = null }) {
   const [mode, setMode] = useState(initialMode); // 'login' | 'register'
   const [role, setRole] = useState('STUDENT'); // 'STUDENT' | 'TUTOR'
   const [displayName, setDisplayName] = useState('');
@@ -254,6 +254,28 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onLo
           <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
             {loading ? 'Đang gửi Backend...' : (mode === 'login' ? 'Đăng nhập ngay' : 'Tạo tài khoản')}
           </button>
+
+          {onOpenVerifyEmail && (
+            <div style={{ textAlign: 'center', marginTop: 14 }}>
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onOpenVerifyEmail();
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#2563eb',
+                  fontSize: '0.82rem',
+                  fontWeight: 600,
+                  cursor: 'pointer'
+                }}
+              >
+                ✉ Đã có mã hoặc liên kết xác thực email? Kích hoạt tại đây
+              </button>
+            </div>
+          )}
         </form>
       </div>
     </div>

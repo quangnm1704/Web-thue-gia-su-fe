@@ -64,7 +64,9 @@ export default function Navbar({
   onOpenTutorProfile = null,
   onOpenProfile = null,
   onOpenBankAccounts = null,
-  onOpenTutorIncome = null
+  onOpenTutorIncome = null,
+  onOpenMyServices = null,
+  onOpenLessonEditor = null
 }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [showCategories, setShowCategories] = useState(false);
@@ -742,6 +744,16 @@ export default function Navbar({
                         <span>💳 Thông tin ngân hàng (CN02.02)</span>
                       </button>
 
+                      {/* Dịch vụ đã đăng ký của tôi (CN02.14) */}
+                      <button
+                        className="menu-item"
+                        onClick={() => { setShowUserMenu(false); if (onOpenMyServices) onOpenMyServices(); }}
+                        style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px' }}
+                      >
+                        <GraduationCap size={16} color="#2563eb" />
+                        <span>📋 Dịch vụ đã đăng ký (CN02.14)</span>
+                      </button>
+
                       {currentUser.role === 'TUTOR' ? (
                         <>
                           {/* Theo dõi thu nhập gia sư (CN04.03) */}
@@ -752,6 +764,16 @@ export default function Navbar({
                           >
                             <DollarSign size={16} color="#059669" />
                             <span style={{ fontWeight: 700, color: '#047857' }}>📊 Thống kê thu nhập (CN04.03)</span>
+                          </button>
+
+                          {/* Quản lý bài học và video của gia sư (CN04.02) */}
+                          <button
+                            className="menu-item"
+                            onClick={() => { setShowUserMenu(false); if (onOpenLessonEditor) onOpenLessonEditor(); }}
+                            style={{ width: '100%', textAlign: 'left', background: '#f5f3ff', border: '1px solid #ddd6fe', borderRadius: 4, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', marginBottom: 6 }}
+                          >
+                            <BookOpen size={16} color="#7c3aed" />
+                            <span style={{ fontWeight: 700, color: '#6b21a8' }}>📚 Quản lý bài học & video (CN04.02)</span>
                           </button>
                           <button
                             className="menu-item"

@@ -274,3 +274,4 @@ export default function UserProfileModal({ isOpen, onClose, currentUser, onUserU
     </div>
   );
 }
+

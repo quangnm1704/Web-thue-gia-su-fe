@@ -18,7 +18,8 @@ import {
   ShieldCheck,
   CreditCard,
   Check,
-  Sparkles
+  Sparkles,
+  Star
 } from 'lucide-react';
 import { bookingApi, disputeApi } from '../services/api';
 
@@ -28,7 +29,8 @@ export default function TutorBookingsModal({
   currentUser,
   onOpenChat,
   onOpenCheckout,
-  onWalletUpdated
+  onWalletUpdated,
+  onOpenReview = null
 }) {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -442,6 +444,35 @@ export default function TutorBookingsModal({
                             title="Xóa đơn này khỏi màn hình xem"
                           >
                             <Trash2 size={14} /> Xóa khỏi danh sách
+                          </button>
+                        )}
+
+                        {/* Nút Đánh giá gia sư sau khi hoàn thành (CN02.18) */}
+                        {!isTutor && isCompleted && onOpenReview && (
+                          <button
+                            type="button"
+                            className="btn btn-outline"
+                            style={{
+                              fontSize: '0.82rem',
+                              padding: '6px 12px',
+                              color: '#b45309',
+                              borderColor: '#fcd34d',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 5,
+                              background: '#fffbeb'
+                            }}
+                            onClick={() => {
+                              onClose();
+                              onOpenReview({
+                                type: 'booking',
+                                id: booking.id,
+                                title: booking.packageName || 'Đơn gia sư',
+                                tutorName: booking.tutorName
+                              });
+                            }}
+                          >
+                            <Star size={14} color="#d97706" fill="#d97706" /> Đánh giá gia sư
                           </button>
                         )}
 
