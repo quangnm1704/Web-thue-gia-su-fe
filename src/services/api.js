@@ -505,6 +505,55 @@ export const adminApi = {
   getWithdrawals: async () => {
     return await request('/admin/withdrawals');
   },
+
+  // GET /admin/reviews (CN06.09: Quản lý phản hồi & đánh giá)
+  getReviews: async () => {
+    return await request('/admin/reviews');
+  },
+
+  // DELETE /admin/reviews/:id (CN06.09: Xóa / Gỡ đánh giá vi phạm)
+  deleteReview: async (id) => {
+    return await request(`/admin/reviews/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+  // GET /admin/lessons (CN06.03: Quản lý bài học khóa học)
+  getLessons: async (params = {}) => {
+    const query = new URLSearchParams();
+    if (params.courseId) query.append('courseId', params.courseId);
+    if (params.keyword) query.append('keyword', params.keyword);
+    const queryString = query.toString();
+    return await request(`/admin/lessons${queryString ? `?${queryString}` : ''}`);
+  },
+
+  // GET /admin/settlement (CN06.12: Phân bổ tiền dịch vụ)
+  getSettlement: async (serviceType, serviceId) => {
+    return await request(`/admin/settlement?serviceType=${serviceType}&serviceId=${serviceId}`);
+  },
+
+  // POST /admin/settlement/release (CN06.12: Giải ngân ký quỹ thủ công)
+  releaseSettlement: async (serviceType, serviceId) => {
+    return await request('/admin/settlement/release', {
+      method: 'POST',
+      body: JSON.stringify({ serviceType, serviceId }),
+    });
+  },
+
+  // GET /admin/reconciliation/summary (CN06.13: Đối soát tài chính)
+  getReconciliationSummary: async () => {
+    return await request('/admin/reconciliation/summary');
+  },
+
+  // GET /admin/reconciliation/transactions (CN06.13: Danh sách bút toán đối soát)
+  getReconciliationTransactions: async (params = {}) => {
+    const query = new URLSearchParams();
+    if (params.type) query.append('type', params.type);
+    if (params.status) query.append('status', params.status);
+    if (params.referenceCode) query.append('referenceCode', params.referenceCode);
+    const queryString = query.toString();
+    return await request(`/admin/reconciliation/transactions${queryString ? `?${queryString}` : ''}`);
+  },
 };
 
 /* ==================== 11. WALLET & DEPOSIT ==================== */

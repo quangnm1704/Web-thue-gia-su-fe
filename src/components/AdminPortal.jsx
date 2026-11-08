@@ -28,9 +28,18 @@ import {
   Check,
   Clock,
   ArrowUpRight,
-  Building2
+  Building2,
+  Star,
+  BookOpen,
+  Layers,
+  PieChart,
+  X
 } from 'lucide-react';
 import { adminApi, articleApi, withdrawalApi } from '../services/api';
+import AdminReviewsTab from './AdminReviewsTab';
+import AdminLessonsTab from './AdminLessonsTab';
+import AdminSettlementTab from './AdminSettlementTab';
+import AdminReconciliationTab from './AdminReconciliationTab';
 
 export default function AdminPortal({ currentUser, onBackToClient, onLogout, onDeleteArticle }) {
   const [activeTab, setActiveTab] = useState('overview');
@@ -565,6 +574,29 @@ export default function AdminPortal({ currentUser, onBackToClient, onLogout, onD
           </button>
 
           <button
+            onClick={() => { setActiveTab('lessons'); setSearchTerm(''); }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '11px 20px',
+              border: 'none',
+              background: activeTab === 'lessons' ? '#f5f3ff' : 'transparent',
+              color: activeTab === 'lessons' ? '#7c3aed' : '#475569',
+              fontWeight: activeTab === 'lessons' ? 700 : 500,
+              fontSize: '0.9rem',
+              textAlign: 'left',
+              cursor: 'pointer',
+              borderLeft: activeTab === 'lessons' ? '4px solid #7c3aed' : '4px solid transparent'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <BookOpen size={18} />
+              <span>Quản lý Bài học (CN06.03)</span>
+            </div>
+          </button>
+
+          <button
             onClick={() => { setActiveTab('disputes'); setSearchTerm(''); }}
             style={{
               display: 'flex',
@@ -620,6 +652,52 @@ export default function AdminPortal({ currentUser, onBackToClient, onLogout, onD
                 {withdrawals.length}
               </span>
             )}
+          </button>
+
+          <button
+            onClick={() => { setActiveTab('settlement'); setSearchTerm(''); }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '11px 20px',
+              border: 'none',
+              background: activeTab === 'settlement' ? '#f5f3ff' : 'transparent',
+              color: activeTab === 'settlement' ? '#7c3aed' : '#475569',
+              fontWeight: activeTab === 'settlement' ? 700 : 500,
+              fontSize: '0.9rem',
+              textAlign: 'left',
+              cursor: 'pointer',
+              borderLeft: activeTab === 'settlement' ? '4px solid #7c3aed' : '4px solid transparent'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <Layers size={18} />
+              <span>Phân bổ Tiền DV (CN06.12)</span>
+            </div>
+          </button>
+
+          <button
+            onClick={() => { setActiveTab('reconciliation'); setSearchTerm(''); }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '11px 20px',
+              border: 'none',
+              background: activeTab === 'reconciliation' ? '#f5f3ff' : 'transparent',
+              color: activeTab === 'reconciliation' ? '#7c3aed' : '#475569',
+              fontWeight: activeTab === 'reconciliation' ? 700 : 500,
+              fontSize: '0.9rem',
+              textAlign: 'left',
+              cursor: 'pointer',
+              borderLeft: activeTab === 'reconciliation' ? '4px solid #7c3aed' : '4px solid transparent'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <PieChart size={18} />
+              <span>Đối soát Tài chính (CN06.13)</span>
+            </div>
           </button>
 
           {/* Group 3 */}
@@ -682,6 +760,29 @@ export default function AdminPortal({ currentUser, onBackToClient, onLogout, onD
             <span style={{ fontSize: '0.75rem', background: '#e2e8f0', color: '#475569', padding: '1px 7px', borderRadius: 10, fontWeight: 700 }}>
               {articles.length}
             </span>
+          </button>
+
+          <button
+            onClick={() => { setActiveTab('reviews'); setSearchTerm(''); }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '11px 20px',
+              border: 'none',
+              background: activeTab === 'reviews' ? '#f5f3ff' : 'transparent',
+              color: activeTab === 'reviews' ? '#7c3aed' : '#475569',
+              fontWeight: activeTab === 'reviews' ? 700 : 500,
+              fontSize: '0.9rem',
+              textAlign: 'left',
+              cursor: 'pointer',
+              borderLeft: activeTab === 'reviews' ? '4px solid #7c3aed' : '4px solid transparent'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <Star size={18} />
+              <span>Đánh giá & Phản hồi (CN06.09)</span>
+            </div>
           </button>
 
           {/* Bottom Refresh */}
@@ -1767,6 +1868,18 @@ export default function AdminPortal({ currentUser, onBackToClient, onLogout, onD
               )}
             </div>
           )}
+
+          {/* TAB 8: QUẢN LÝ BÀI HỌC (CN06.03) */}
+          {activeTab === 'lessons' && <AdminLessonsTab />}
+
+          {/* TAB 9: PHÂN BỔ TIỀN DỊCH VỤ (CN06.12) */}
+          {activeTab === 'settlement' && <AdminSettlementTab />}
+
+          {/* TAB 10: ĐỐI SOÁT TÀI CHÍNH (CN06.13) */}
+          {activeTab === 'reconciliation' && <AdminReconciliationTab />}
+
+          {/* TAB 11: ĐÁNH GIÁ & PHẢN HỒI (CN06.09) */}
+          {activeTab === 'reviews' && <AdminReviewsTab />}
 
         </main>
       </div>
